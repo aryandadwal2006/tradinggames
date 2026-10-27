@@ -8,7 +8,7 @@ Install dependencies, run the development server with npm run dev, and validate 
 
 ## Current scope
 
-The catalog covers all nine formats in the supplied materials. Math Challenge and Fermi Questions are playable; other modules remain clearly marked in development until their state transitions and settlement can be specified and tested. Fermi estimates report transparent factor-error calibration, not an invented replica of the original game's unpublished point curve.
+The catalog covers all nine formats in the supplied materials. Fruit Market, Fermi Questions, and Math Challenge are playable. Other modules remain marked in development until their state transitions and settlement can be specified and tested. Fruit Market exposes its custom quote-generation assumptions; Fermi estimates report transparent factor-error calibration rather than an invented replica of the original game's unpublished point curve.
 
 ## Deployment
 
