@@ -1,4 +1,5 @@
 import type { FermiSessionSummary } from './fermiChallenge';
+import type { FruitSessionSummary } from './fruitMarket';
 import type { MathSessionSummary } from './mathChallenge';
 
 const STORAGE_KEY = 'trading-games.stats.v1';
@@ -16,6 +17,10 @@ export interface LocalStats {
   fermiRounds: number;
   fermiBestMedianFactor: number | null;
   fermiRecentSessions: FermiSessionSummary[];
+  fruitSessions: number;
+  fruitBestScore: number | null;
+  fruitBestAccuracy: number | null;
+  fruitRecentSessions: FruitSessionSummary[];
 }
 
 const EMPTY_STATS: LocalStats = {
@@ -29,7 +34,11 @@ const EMPTY_STATS: LocalStats = {
   fermiSessions: 0,
   fermiRounds: 0,
   fermiBestMedianFactor: null,
-  fermiRecentSessions: []
+  fermiRecentSessions: [],
+  fruitSessions: 0,
+  fruitBestScore: null,
+  fruitBestAccuracy: null,
+  fruitRecentSessions: []
 };
 
 function validSummary(value: unknown): value is MathSessionSummary {
@@ -56,6 +65,20 @@ function validFermiSummary(value: unknown): value is FermiSessionSummary {
     && typeof candidate.playedAt === 'string';
 }
 
+function validFruitSummary(value: unknown): value is FruitSessionSummary {
+  if (typeof value !== 'object' || value === null) return false;
+  const candidate = value as Partial<FruitSessionSummary>;
+  return typeof candidate.rawProfit === 'number'
+    && typeof candidate.score === 'number'
+    && (candidate.firstClickAccuracy === null || typeof candidate.firstClickAccuracy === 'number')
+    && typeof candidate.firstClickTrials === 'number'
+    && typeof candidate.profitableFirstClicks === 'number'
+    && typeof candidate.trades === 'number'
+    && typeof candidate.profitableTrades === 'number'
+    && typeof candidate.durationSeconds === 'number'
+    && typeof candidate.playedAt === 'string';
+}
+
 function count(value: unknown): number {
   return typeof value === 'number' && Number.isFinite(value) ? Math.max(0, Math.floor(value)) : 0;
 }
@@ -77,6 +100,9 @@ function parseStats(raw: string | null): LocalStats {
     const fermiRecentSessions = Array.isArray(candidate.fermiRecentSessions)
       ? candidate.fermiRecentSessions.filter(validFermiSummary).slice(0, MAX_RECENT_SESSIONS)
       : [];
+    const fruitRecentSessions = Array.isArray(candidate.fruitRecentSessions)
+      ? candidate.fruitRecentSessions.filter(validFruitSummary).slice(0, MAX_RECENT_SESSIONS)
+      : [];
     return {
       version: 1,
       sessions: count(candidate.sessions),
@@ -90,7 +116,11 @@ function parseStats(raw: string | null): LocalStats {
       fermiBestMedianFactor: typeof candidate.fermiBestMedianFactor === 'number' && Number.isFinite(candidate.fermiBestMedianFactor)
         ? candidate.fermiBestMedianFactor
         : null,
-      fermiRecentSessions
+      fermiRecentSessions,
+      fruitSessions: count(candidate.fruitSessions),
+      fruitBestScore: typeof candidate.fruitBestScore === 'number' && Number.isFinite(candidate.fruitBestScore) ? candidate.fruitBestScore : null,
+      fruitBestAccuracy: typeof candidate.fruitBestAccuracy === 'number' && Number.isFinite(candidate.fruitBestAccuracy) ? candidate.fruitBestAccuracy : null,
+      fruitRecentSessions
     };
   } catch {
     return { ...EMPTY_STATS };
@@ -143,6 +173,24 @@ export function saveFermiSession(summary: FermiSessionSummary): LocalStats {
         ? validFactor
         : Math.min(previous.fermiBestMedianFactor, validFactor),
     fermiRecentSessions: [summary, ...previous.fermiRecentSessions].slice(0, MAX_RECENT_SESSIONS),
+    lastPlayedAt: summary.playedAt
+  };
+  persistStats(next);
+  return next;
+}
+
+export function saveFruitSession(summary: FruitSessionSummary): LocalStats {
+  const previous = loadStats();
+  const accuracy = summary.firstClickAccuracy;
+  const next: LocalStats = {
+    ...previous,
+    sessions: previous.sessions + 1,
+    fruitSessions: previous.fruitSessions + 1,
+    fruitBestScore: previous.fruitBestScore === null ? summary.score : Math.max(previous.fruitBestScore, summary.score),
+    fruitBestAccuracy: accuracy === null
+      ? previous.fruitBestAccuracy
+      : previous.fruitBestAccuracy === null ? accuracy : Math.max(previous.fruitBestAccuracy, accuracy),
+    fruitRecentSessions: [summary, ...previous.fruitRecentSessions].slice(0, MAX_RECENT_SESSIONS),
     lastPlayedAt: summary.playedAt
   };
   persistStats(next);
