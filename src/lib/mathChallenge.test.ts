@@ -17,6 +17,7 @@ describe('Math Challenge question generation', () => {
       const question = generateMathQuestion(rng, mode, index + 1);
       expect(question.mode).toBe(mode);
       expect(question.choices).toHaveLength(4);
+      expect(new Set(question.choices.map((choice) => choice.value)).size).toBe(4);
       expect(question.choices.filter((choice) => choice.correct)).toHaveLength(1);
       expect(isAnswerCorrect(question, question.answerDisplay)).toBe(true);
       expect(isAnswerCorrect(question, 'not an answer')).toBe(false);
