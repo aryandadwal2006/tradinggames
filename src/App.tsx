@@ -1,14 +1,16 @@
 import { useMemo, useState } from 'react';
 import FermiChallenge from './components/FermiChallenge';
 import FruitMarket from './components/FruitMarket';
+import MakeMeAMarket from './components/MakeMeAMarket';
 import MathChallenge from './components/MathChallenge';
 import { GAMES, type GameDefinition } from './data/games';
-import { saveFermiSession, saveFruitSession, saveMathSession, loadStats, type LocalStats } from './lib/storage';
+import { saveFermiSession, saveFruitSession, saveMarketMakingSession, saveMathSession, loadStats, type LocalStats } from './lib/storage';
 import type { FermiSessionSummary } from './lib/fermiChallenge';
 import type { FruitSessionSummary } from './lib/fruitMarket';
+import type { MarketMakingSessionSummary } from './lib/makeMeAMarket';
 import type { MathSessionSummary } from './lib/mathChallenge';
 
-type View = 'overview' | 'math' | 'fermi' | 'fruit';
+type View = 'overview' | 'math' | 'fermi' | 'fruit' | 'market-making';
 
 function formatInteger(value: number): string {
   return new Intl.NumberFormat('en-US').format(value);
@@ -44,6 +46,7 @@ function App() {
     if (game.slug === 'math-challenge') setView('math');
     else if (game.slug === 'fermi-questions') setView('fermi');
     else if (game.slug === 'fruit-market') setView('fruit');
+    else if (game.slug === 'make-me-a-market') setView('market-making');
     else setView('overview');
   };
 
@@ -57,6 +60,10 @@ function App() {
 
   const handleFruitComplete = (summary: FruitSessionSummary) => {
     setStats(saveFruitSession(summary));
+  };
+
+  const handleMarketMakingComplete = (summary: MarketMakingSessionSummary) => {
+    setStats(saveMarketMakingSession(summary));
   };
 
   const resetFocus = () => {
@@ -84,6 +91,14 @@ function App() {
     return (
       <div className="app-frame">
         <FruitMarket onExit={resetFocus} onComplete={handleFruitComplete} />
+      </div>
+    );
+  }
+
+  if (view === 'market-making') {
+    return (
+      <div className="app-frame">
+        <MakeMeAMarket onExit={resetFocus} onComplete={handleMarketMakingComplete} />
       </div>
     );
   }
@@ -145,6 +160,7 @@ function App() {
                 <StatCard label="Best net score" value={stats.bestScore === null ? '—' : (stats.bestScore > 0 ? '+' : '') + stats.bestScore} note="Math Challenge" icon="⌁" />
                 <StatCard label="Best Fermi calibration" value={stats.fermiBestMedianFactor === null ? '—' : '× ' + formatInteger(Math.round(stats.fermiBestMedianFactor * 100) / 100)} note={stats.fermiSessions + ' drills · lower is better'} icon="≈" />
               <StatCard label="Best Fruit score" value={stats.fruitBestScore === null ? '—' : (stats.fruitBestScore > 0 ? '+' : '') + formatInteger(Math.round(stats.fruitBestScore * 100) / 100)} note={stats.fruitSessions + ' markets · adjusted P&L'} icon="↔" />
+              <StatCard label="Best market P&L" value={stats.marketMakingBestPnl === null ? '—' : (stats.marketMakingBestPnl > 0 ? '+' : '') + formatInteger(Math.round(stats.marketMakingBestPnl * 100) / 100)} note={stats.marketMakingSessions + ' market sessions'} icon="⇄" />
               </section>
 
               <section className="featured-section">
