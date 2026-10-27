@@ -26,6 +26,18 @@ export interface CardDeal {
   centerCards: PlayingCard[];
 }
 
+export interface MarketCardsSessionSummary {
+  players: number;
+  aceMode: AceMode;
+  rounds: number;
+  trades: number;
+  finalValue: number;
+  finalPnl: number;
+  finalPosition: number;
+  durationSeconds: number;
+  playedAt: string;
+}
+
 export interface BotResponder {
   id: number;
   fairValue: number;

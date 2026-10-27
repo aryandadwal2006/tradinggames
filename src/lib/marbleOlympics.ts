@@ -62,6 +62,19 @@ export interface MarbleSideBetDefinition {
   formula: string;
 }
 
+export interface MarbleSessionSummary {
+  durationMinutes: number;
+  mainTrades: number;
+  sideBetTrades: number;
+  pnl: number;
+  mainPnl: number;
+  sideBetPnl: number;
+  finalTeamATotal: number;
+  finalTeamBTotal: number;
+  durationSeconds: number;
+  playedAt: string;
+}
+
 export interface MarbleFairSnapshot {
   teamAExpected: number;
   teamBExpected: number;

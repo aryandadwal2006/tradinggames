@@ -17,22 +17,10 @@ import {
   type LiveMarbleCounts,
   type MarbleColor,
   type MarbleMatchSetup,
+  type MarbleSessionSummary,
   type MarbleSideBetDefinition,
   type MarbleTeam
 } from '../lib/marbleOlympics';
-
-export interface MarbleSessionSummary {
-  durationMinutes: number;
-  mainTrades: number;
-  sideBetTrades: number;
-  pnl: number;
-  mainPnl: number;
-  sideBetPnl: number;
-  finalTeamATotal: number;
-  finalTeamBTotal: number;
-  durationSeconds: number;
-  playedAt: string;
-}
 
 interface MarbleOlympicsProps {
   onExit: () => void;
@@ -197,8 +185,8 @@ export default function MarbleOlympics({ onExit, onComplete }: MarbleOlympicsPro
     sum + settleSideBetTrade(trade.direction, trade.size, trade.price, sideBetPayout(trade.market.id, finalTotals)), 0);
   const finalPnl = finalMainPnl + finalSideBetPnl;
   const realSecondsRemaining = setup
-    ? Math.max(0, duration * 60 - realElapsedMs / Math.max(playbackSpeed, 1))
-    : duration * 60;
+    ? Math.max(0, duration * 60 / Math.max(playbackSpeed, 1) - realElapsedMs / 1000)
+    : duration * 60 / Math.max(playbackSpeed, 1);
 
   const startMatch = () => {
     const random = new SeededRandom(createSessionSeed());
@@ -526,7 +514,7 @@ export default function MarbleOlympics({ onExit, onComplete }: MarbleOlympicsPro
           </section>
 
           <section className="mo-panel mo-log-panel">
-            <div className="mo-panel-heading"><div><div className="mo-panel-kicker">LIVE REVIEW</div><h2>Match and trade tape</h2></div><span className="mo-subtle">{durationLabel(realSecondsRemaining / Math.max(playbackSpeed, 1))} real-clock time remaining at selected speed</span></div>
+            <div className="mo-panel-heading"><div><div className="mo-panel-kicker">LIVE REVIEW</div><h2>Match and trade tape</h2></div><span className="mo-subtle">{durationLabel(realSecondsRemaining)} real-clock time remaining at selected speed</span></div>
             <div className="mo-tabs"><button className={logTab === 'match' ? 'mo-tab-active' : ''} type="button" onClick={() => setLogTab('match')}>Shot timeline ({timeline.length})</button><button className={logTab === 'trades' ? 'mo-tab-active' : ''} type="button" onClick={() => setLogTab('trades')}>Your trades ({mainTrades.length + sideTrades.length})</button></div>
             {logTab === 'match' ? (
               <div className="mo-timeline-list">{eventTape.length ? eventTape.map((entry) => (

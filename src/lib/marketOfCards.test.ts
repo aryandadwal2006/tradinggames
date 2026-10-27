@@ -45,8 +45,13 @@ describe('Market of Cards rules', () => {
     const hand = [deck.find((card) => card.id === '8-hearts')!, deck.find((card) => card.id === 'Q-spades')!];
     const revealed = [deck.find((card) => card.id === '9-diamonds')!];
     const estimate = estimateGameValue(hand, revealed, 4, 'high');
+    const known = [...hand, ...revealed];
+    const knownIds = new Set(known.map((card) => card.id));
+    const unseen = deck.filter((card) => !knownIds.has(card.id));
+    const knownValue = known.reduce((sum, card) => sum + cardValue(card, 'high'), 0);
+    const exactExpectation = knownValue + 8 * unseen.reduce((sum, card) => sum + cardValue(card, 'high'), 0) / unseen.length;
     expect(estimate).toBeGreaterThan(0);
-    expect(estimate).toBeCloseTo(370, -1);
+    expect(estimate).toBeCloseTo(exactExpectation, 8);
   });
 
   it('settles all card values from every in-play hand and center card', () => {

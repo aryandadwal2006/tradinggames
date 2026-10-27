@@ -12,26 +12,16 @@ import {
   generateBotProfiles,
   INITIAL_TRADING_POSITION,
   makeBotQuote,
+  MARKET_CARD_CENTER_COUNT,
   settlePosition,
   validateCardQuote,
   type AceMode,
   type CardQuote,
   type PlayingCard,
-  type TradingPosition
+  type TradingPosition,
+  type MarketCardsSessionSummary
 } from '../lib/marketOfCards';
 import { createSessionSeed, SeededRandom } from '../lib/rng';
-
-export interface MarketCardsSessionSummary {
-  players: number;
-  aceMode: AceMode;
-  rounds: number;
-  trades: number;
-  finalValue: number;
-  finalPnl: number;
-  finalPosition: number;
-  durationSeconds: number;
-  playedAt: string;
-}
 
 interface MarketOfCardsProps {
   onExit: () => void;
