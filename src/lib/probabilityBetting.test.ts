@@ -48,6 +48,18 @@ describe('Probability Betting offers', () => {
     }
   });
 
+  it('samples each event close to its documented probability over a deterministic batch', () => {
+    for (const event of PROBABILITY_EVENT_BANK) {
+      const rng = new SeededRandom(7000 + event.id.length * 13);
+      const trials = 6000;
+      let successes = 0;
+      for (let i = 0; i < trials; i += 1) {
+        if (sampleProbabilityOutcome(event.outcomeKind, rng)) successes += 1;
+      }
+      expect(Math.abs(successes / trials - event.probability)).toBeLessThan(0.03);
+    }
+  });
+
   it('settles multiple decisions with bankroll, P&L, and outcome accounting', () => {
     const rng = new SeededRandom(1009);
     const offers = generateProbabilityOffers(rng, 4);
