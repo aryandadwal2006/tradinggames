@@ -369,7 +369,7 @@ button:disabled { opacity: .42; cursor: not-allowed; }
 }
 
 
-.overview-stats { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.overview-stats { grid-template-columns: repeat(5, minmax(0, 1fr)); }
 .value-positive { color: #9be4b4 !important; }
 .value-negative { color: #f0a4a4 !important; }
 .fruit-setup-panel { max-width: 900px; }
@@ -486,4 +486,72 @@ button:disabled { opacity: .42; cursor: not-allowed; }
   .fruit-results-panel .result-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .fruit-trade-row { grid-template-columns: 22px minmax(0, 1fr); }
   .fruit-trade-row .review-answer { grid-column: 2; flex-direction: row; text-align: left; }
+}
+
+
+.overview-stats { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+.mmm-setup-panel { max-width: 930px; }
+.mmm-setting-stat { display: flex; flex-direction: column; justify-content: center; gap: 5px; min-height: 42px; padding: 0 0 0 13px; border-left: 1px solid #2a333d; }
+.mmm-setting-stat strong { color: #d8e8df; font: 600 20px var(--head); }
+.mmm-setting-stat span { color: #7d8a98; font-size: 10px; }
+.mmm-rule-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 9px; margin: 23px 0 13px; }
+.mmm-rule-grid > div { display: flex; flex-direction: column; gap: 7px; min-height: 116px; padding: 14px; border: 1px solid #2c353f; border-radius: 6px; background: #151b23; }
+.mmm-rule-grid strong { color: #d0ded6; font: 600 11px var(--head); }
+.mmm-rule-grid span { color: #82909d; font-size: 10px; line-height: 1.65; }
+.mmm-method-note { margin-bottom: 21px; }
+.mmm-question-card { min-height: 400px; }
+.mmm-question-card h2 { margin: 23px 0 8px; color: #ecf1f4; font: 600 23px var(--head); letter-spacing: -.6px; }
+.mmm-prompt { max-width: 720px; margin: 0 0 12px; color: #b4bec9; font-size: clamp(15px, 2vw, 19px); line-height: 1.65; }
+.mmm-context { margin: 0 0 23px; color: #82909e; font-size: 11px; line-height: 1.7; max-width: 740px; }
+.mmm-interval-form { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto; align-items: end; gap: 10px; margin-top: 22px; }
+.mmm-interval-form .field-label input, .mmm-quote-form .field-label input { height: 43px; width: 100%; min-width: 0; padding: 0 12px; background: #0d1218; color: #e5ebef; border: 1px solid #35404b; border-radius: 6px; font: 12px var(--mono); }
+.mmm-interval-form .field-label input::placeholder, .mmm-quote-form .field-label input::placeholder { color: #5e6b79; font: 10px 'DM Sans', sans-serif; }
+.mmm-interval-form .primary-button { min-height: 43px; }
+.mmm-quote-form { display: grid; grid-template-columns: minmax(0, 1fr) 56px minmax(0, 1fr); align-items: end; gap: 9px; margin-top: 15px; }
+.mmm-quote-form > .primary-button { grid-column: 1 / -1; justify-self: start; margin-top: 5px; }
+.mmm-quote-divider { min-height: 43px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; color: #788795; font: 8px var(--mono); }
+.mmm-quote-divider i { color: #a4b6ad; font: normal 18px var(--head); }
+.mmm-interval-locked { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px; padding: 12px 14px; border: 1px solid #2c4236; border-radius: 6px; background: rgba(111, 187, 138, .05); margin: 19px 0 17px; }
+.mmm-interval-locked span { color: #7f978a; font: 9px var(--mono); letter-spacing: .5px; }
+.mmm-interval-locked strong { color: #c4e7d0; font: 500 13px var(--mono); }
+.mmm-interval-locked i { color: #7b9c86; font-style: normal; padding: 0 6px; }
+.mmm-reveal > .eyebrow { margin-top: 21px; }
+.mmm-reveal h1 { color: #eef2f5; font: 600 clamp(25px, 4vw, 34px)/1.2 var(--head); letter-spacing: -1px; margin: 12px 0 9px; }
+.mmm-reveal-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; margin: 23px 0 12px; }
+.mmm-reveal-grid > div { display: flex; flex-direction: column; gap: 7px; min-height: 89px; padding: 14px; border: 1px solid #2b343f; border-radius: 6px; background: #121820; }
+.mmm-reveal-grid > div > span { color: #7d8a97; font: 9px var(--mono); letter-spacing: .7px; }
+.mmm-reveal-grid strong { color: #e5ebef; font: 600 19px var(--head); letter-spacing: -.4px; overflow-wrap: anywhere; }
+.mmm-reveal-grid strong small { color: #82909b; font: 10px 'DM Sans', sans-serif; letter-spacing: 0; }
+.mmm-reveal-grid strong i { color: #697987; font-style: normal; padding: 0 5px; }
+.mmm-settlement-card { padding: 19px; border: 1px solid #2c3741; background: #11171f; border-radius: 7px; margin-top: 12px; }
+.mmm-settlement-card h2 { color: #e6edf1; font: 600 17px var(--head); margin: 9px 0 6px; }
+.mmm-settlement-card p { color: #a0acb8; margin: 0; font-size: 11px; line-height: 1.65; }
+.mmm-settlement-detail { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px 15px; padding-top: 13px; margin-top: 13px; border-top: 1px solid #29313b; color: #7e8c99; font-size: 10px; }
+.mmm-settlement-detail strong { color: #cbd5dd; font: 10px var(--mono); }
+.mmm-results-panel .result-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.mmm-results-panel .result-grid strong { font-size: 16px; }
+.mmm-review-row { grid-template-columns: 25px minmax(0, 1fr) minmax(100px, auto); }
+.mmm-review-row .review-answer strong { white-space: nowrap; }
+@media (max-width: 1180px) {
+  .overview-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (max-width: 850px) {
+  .mmm-interval-form { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .mmm-interval-form .primary-button { grid-column: 1 / -1; justify-self: start; }
+  .mmm-rule-grid { grid-template-columns: 1fr; }
+  .mmm-rule-grid > div { min-height: auto; }
+}
+@media (max-width: 580px) {
+  .overview-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .mmm-rule-grid { gap: 7px; }
+  .mmm-quote-form { grid-template-columns: minmax(0, 1fr) 35px minmax(0, 1fr); gap: 6px; }
+  .mmm-quote-form .field-label input { padding: 0 8px; font-size: 11px; }
+  .mmm-quote-divider { font-size: 7px; }
+  .mmm-quote-divider i { font-size: 15px; }
+  .mmm-reveal-grid { gap: 7px; }
+  .mmm-reveal-grid > div { padding: 11px; }
+  .mmm-reveal-grid strong { font-size: 16px; }
+  .mmm-results-panel .result-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .mmm-review-row { grid-template-columns: 22px minmax(0, 1fr); }
+  .mmm-review-row .review-answer { grid-column: 2; flex-direction: row; text-align: left; }
 }
