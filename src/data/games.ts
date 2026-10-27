@@ -70,7 +70,7 @@ export const GAMES: GameDefinition[] = [
     difficulty: 'Medium',
     duration: '10 min',
     players: 'Solo',
-    description: 'Price dice, card, and coin events, recognize mispriced odds, and size bets with discipline.',
+    description: 'Compare event probabilities with quoted odds, place multi-event bets, and control aggregate exposure.',
     skills: ['Probability', 'Expected value', 'Kelly sizing'],
     rules: [
       'Each round presents events with quoted odds. The described events include dice, cards, and coin flips.',
@@ -78,7 +78,7 @@ export const GAMES: GameDefinition[] = [
       'The review compares fair odds, quoted odds, estimated edge, and Kelly-optimal size.',
       'Exact event distributions, quote-generation rules, and the complete scoring formula still need specification.'
     ],
-    playable: false,
+    playable: true,
     accent: 'violet',
     externalRules: 'https://marketmakinggames.com/games/probability-betting'
   },
