@@ -209,17 +209,42 @@ function posteriorAccuracy(
   return (historicalGoals + live.goals + 1) / (historicalShots + live.shots + 2);
 }
 
-function binomialPmf(trials: number, probability: number): number[] {
+function betaBinomialPmf(trials: number, alpha: number, beta: number): number[] {
   const n = Math.max(0, Math.floor(trials));
-  const p = Math.min(1, Math.max(0, probability));
   if (n === 0) return [1];
-  if (p === 0) return [1, ...Array.from({ length: n }, () => 0)];
-  if (p === 1) return [...Array.from({ length: n }, () => 0), 1];
-  const result = [Math.pow(1 - p, n)];
-  for (let k = 0; k < n; k += 1) {
-    result.push((result[k] ?? 0) * ((n - k) / (k + 1)) * (p / (1 - p)));
+  const safeAlpha = Math.max(0.001, alpha);
+  const safeBeta = Math.max(0.001, beta);
+  let probabilityZero = 1;
+  for (let i = 0; i < n; i += 1) {
+    probabilityZero *= (safeBeta + i) / (safeAlpha + safeBeta + i);
   }
-  return result;
+  const result = [probabilityZero];
+  for (let k = 0; k < n; k += 1) {
+    const next = (result[k] ?? 0) * ((n - k) / (k + 1))
+      * ((safeAlpha + k) / (safeBeta + n - k - 1));
+    result.push(next);
+  }
+  const total = result.reduce((sum, probability) => sum + probability, 0);
+  return total > 0 ? result.map((probability) => probability / total) : result;
+}
+
+function predictivePmf(
+  setup: MarbleMatchSetup,
+  counts: LiveMarbleCounts,
+  team: MarbleTeam,
+  color: MarbleColor,
+  remainingShots: number
+): number[] {
+  let historicalShots = 0;
+  let historicalGoals = 0;
+  for (const round of setup.bracket) {
+    historicalShots += round[team][color].shots;
+    historicalGoals += round[team][color].goals;
+  }
+  const live = counts[team][color];
+  const alpha = historicalGoals + live.goals + 1;
+  const beta = historicalShots - historicalGoals + live.shots - live.goals + 1;
+  return betaBinomialPmf(remainingShots, alpha, beta);
 }
 
 function convolve(left: readonly number[], right: readonly number[]): number[] {
@@ -280,21 +305,21 @@ export function estimateMarbleFairValues(
   };
   const teamDistributions: Record<MarbleTeam, number[]> = {
     A: shiftPmf(convolve(
-      binomialPmf(remaining.A.orange, estimatedAccuracy.A.orange),
-      binomialPmf(remaining.A.red, estimatedAccuracy.A.red)
+      predictivePmf(setup, counts, 'A', 'orange', remaining.A.orange),
+      predictivePmf(setup, counts, 'A', 'red', remaining.A.red)
     ), counts.A.orange.goals + counts.A.red.goals),
     B: shiftPmf(convolve(
-      binomialPmf(remaining.B.orange, estimatedAccuracy.B.orange),
-      binomialPmf(remaining.B.red, estimatedAccuracy.B.red)
+      predictivePmf(setup, counts, 'B', 'orange', remaining.B.orange),
+      predictivePmf(setup, counts, 'B', 'red', remaining.B.red)
     ), counts.B.orange.goals + counts.B.red.goals)
   };
   const redDistribution = shiftPmf(convolve(
-    binomialPmf(remaining.A.red, estimatedAccuracy.A.red),
-    binomialPmf(remaining.B.red, estimatedAccuracy.B.red)
+    predictivePmf(setup, counts, 'A', 'red', remaining.A.red),
+    predictivePmf(setup, counts, 'B', 'red', remaining.B.red)
   ), counts.A.red.goals + counts.B.red.goals);
   const orangeDistribution = shiftPmf(convolve(
-    binomialPmf(remaining.A.orange, estimatedAccuracy.A.orange),
-    binomialPmf(remaining.B.orange, estimatedAccuracy.B.orange)
+    predictivePmf(setup, counts, 'A', 'orange', remaining.A.orange),
+    predictivePmf(setup, counts, 'B', 'orange', remaining.B.orange)
   ), counts.A.orange.goals + counts.B.orange.goals);
   const teamAExpected = expectedValue(teamDistributions.A, (value) => value);
   const teamBExpected = expectedValue(teamDistributions.B, (value) => value);
