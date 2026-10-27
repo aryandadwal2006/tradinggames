@@ -1,10 +1,12 @@
 import { useMemo, useState } from 'react';
+import FermiChallenge from './components/FermiChallenge';
 import MathChallenge from './components/MathChallenge';
 import { GAMES, type GameDefinition } from './data/games';
-import { saveMathSession, loadStats, type LocalStats } from './lib/storage';
+import { saveFermiSession, saveMathSession, loadStats, type LocalStats } from './lib/storage';
+import type { FermiSessionSummary } from './lib/fermiChallenge';
 import type { MathSessionSummary } from './lib/mathChallenge';
 
-type View = 'overview' | 'math';
+type View = 'overview' | 'math' | 'fermi';
 
 function formatInteger(value: number): string {
   return new Intl.NumberFormat('en-US').format(value);
@@ -38,11 +40,16 @@ function App() {
   const startGame = (game: GameDefinition) => {
     setFocusedGame(game);
     if (game.slug === 'math-challenge') setView('math');
+    else if (game.slug === 'fermi-questions') setView('fermi');
     else setView('overview');
   };
 
   const handleComplete = (summary: MathSessionSummary) => {
     setStats(saveMathSession(summary));
+  };
+
+  const handleFermiComplete = (summary: FermiSessionSummary) => {
+    setStats(saveFermiSession(summary));
   };
 
   const resetFocus = () => {
@@ -54,6 +61,14 @@ function App() {
     return (
       <div className="app-frame">
         <MathChallenge onExit={resetFocus} onComplete={handleComplete} />
+      </div>
+    );
+  }
+
+  if (view === 'fermi') {
+    return (
+      <div className="app-frame">
+        <FermiChallenge onExit={resetFocus} onComplete={handleFermiComplete} />
       </div>
     );
   }
@@ -97,7 +112,7 @@ function App() {
         </header>
 
         <div className="content-wrap">
-          {focusedGame && focusedGame.slug !== 'math-challenge' ? (
+          {focusedGame && !focusedGame.playable ? (
             <GameDetails game={focusedGame} onBack={resetFocus} />
           ) : (
             <>
@@ -113,7 +128,7 @@ function App() {
               <section className="overview-stats" aria-label="Practice statistics">
                 <StatCard label="Sessions played" value={formatInteger(stats.sessions)} note="All-time on this device" icon="↗" />
                 <StatCard label="Best net score" value={stats.bestScore === null ? '—' : (stats.bestScore > 0 ? '+' : '') + stats.bestScore} note="Math Challenge" icon="⌁" />
-                <StatCard label="Answer accuracy" value={stats.totalCorrect + stats.totalIncorrect === 0 ? '—' : Math.round(stats.totalCorrect / (stats.totalCorrect + stats.totalIncorrect) * 100) + '%'} note={formatInteger(stats.totalCorrect) + ' correct · ' + formatInteger(stats.totalIncorrect) + ' incorrect'} icon="◎" />
+                <StatCard label="Best Fermi calibration" value={stats.fermiBestMedianFactor === null ? '—' : '× ' + formatInteger(Math.round(stats.fermiBestMedianFactor * 100) / 100)} note={stats.fermiSessions + ' drills · lower is better'} icon="≈" />
               </section>
 
               <section className="featured-section">
