@@ -49,8 +49,8 @@ function gcd(a: number, b: number): number {
 }
 
 export function rational(numerator: number, denominator = 1): Rational {
-  if (!Number.isFinite(numerator) || !Number.isFinite(denominator)) {
-    throw new TypeError('Rational values must be finite.');
+  if (!Number.isSafeInteger(numerator) || !Number.isSafeInteger(denominator)) {
+    throw new TypeError('Rational values must be safe integers.');
   }
   if (denominator === 0) throw new RangeError('A rational denominator cannot be zero.');
   const sign = denominator < 0 ? -1 : 1;
@@ -128,7 +128,7 @@ function makeDecimalProblem(rng: SeededRandom, operator: Operator): [Rational, R
   return [left, right];
 }
 
-function makeFractionProblem(rng: SeededRandom, operator: Operator): [Rational, Rational] {
+function makeFractionProblem(rng: SeededRandom): [Rational, Rational] {
   const left = rational(rng.int(1, 15), rng.int(2, 12));
   const right = rational(rng.int(1, 15), rng.int(2, 12));
   return [left, right];
@@ -166,7 +166,7 @@ export function generateMathQuestion(
 
   if (mode === 'integers') operands = makeIntegerProblem(rng, operator);
   else if (mode === 'decimals') operands = makeDecimalProblem(rng, operator);
-  else operands = makeFractionProblem(rng, operator);
+  else operands = makeFractionProblem(rng);
 
   const [left, right] = operands;
   const answer = applyOperator(left, right, operator);
@@ -237,7 +237,9 @@ export function parseRationalInput(input: string): Rational | null {
   const decimals = value.split('.')[1]?.length ?? 0;
   if (decimals > 8) return null;
   const denominator = 10 ** decimals;
-  return rational(Math.round(number * denominator), denominator);
+  const scaledNumerator = Math.round(number * denominator);
+  if (!Number.isSafeInteger(scaledNumerator)) return null;
+  return rational(scaledNumerator, denominator);
 }
 
 export function isAnswerCorrect(question: MathQuestion, rawInput: string): boolean {
