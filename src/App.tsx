@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import MathChallenge from './components/MathChallenge';
-import { GAMES, type GameDefinition, type GameSlug } from './data/games';
+import { GAMES, type GameDefinition } from './data/games';
 import { saveMathSession, loadStats, type LocalStats } from './lib/storage';
 import type { MathSessionSummary } from './lib/mathChallenge';
 
@@ -70,7 +70,7 @@ function App() {
         <button className="nav-item nav-item-active" type="button" onClick={resetFocus}>
           <span className="nav-icon">⌂</span><span>Overview</span><span className="nav-indicator" />
         </button>
-        <button className="nav-item" type="button" onClick={() => { setFilter('All modules'); document.getElementById('game-library')?.scrollIntoView({ behavior: 'smooth' }); }}>
+        <button className="nav-item" type="button" onClick={() => { setFocusedGame(null); setFilter('All modules'); document.getElementById('game-library')?.scrollIntoView({ behavior: 'smooth' }); }}>
           <span className="nav-icon">▦</span><span>Game library</span><span className="nav-count">09</span>
         </button>
         <div className="sidebar-section-label section-label-spaced">YOUR PROGRESS</div>
