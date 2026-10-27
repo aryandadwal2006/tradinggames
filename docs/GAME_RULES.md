@@ -18,14 +18,22 @@ The Society Partner Deck and Society Host Guide name these nine formats: Fruit M
 - ETF Trading Challenge: https://marketmakinggames.com/games/etf-challenge
 - Math Challenge: https://marketmakinggames.com/games/math-challenge
 
-## Implemented in version 0.1
+## Implemented modules
+
+### Math Challenge
 
 Math Challenge has a working timer, original randomized arithmetic questions, multiple-choice and typed answers, exact rational answer checking, the documented +1/−1 scoring rule, end-of-session review, and local statistics. Questions are generated from a seedable pseudo-random generator so tests can replay the same sequence, while live sessions use a random seed.
+
+### Fermi Questions Challenge
+
+The practice drill selects twelve distinct questions from an authored reference bank, randomizes their order for each session, and allows 25 seconds for each estimate. It shows an explanation and one explicit decomposition after the estimate is locked or skipped. The reference values are rounded practice anchors and are not claimed to be exact ground truth for variable real-world quantities.
+
+The public rules specify logarithmic closeness, mention that an estimate within about 1.1× receives 10 points and an estimate within about 2× receives 4 points, and state a −2 penalty for a missed answer. They do not publish the complete point curve. This implementation deliberately does not fabricate those points. It records the symmetric factor error max(estimate/reference, reference/estimate) and uses the median and geometric mean of these errors as local calibration metrics. Lower is better. These are practice metrics, not an imitation of an unpublished scoring formula.
 
 ## Rules that remain incomplete in public descriptions
 
 - Fruit Market: exact quote generation, precise event timing, and the formal meaning of first-click accuracy need confirmation.
-- Fermi Questions: the complete logarithmic scoring curve, penalties by configuration, and a verified question bank are not published.
+- Fermi Questions: the complete logarithmic scoring curve and penalties by configuration are not published. The current module uses an explicitly labelled local error metric instead of claiming platform-score compatibility.
 - Probability Betting: event distributions, quote generation, stake constraints, and full scoring details are not published.
 - The Marble Olympics: team-strength model, event timestamps, side-bet generation, payout formulas by bet type, and the full match clock model are not published.
 - Next Card Betting: precise score formula, shoe/deck reset policy, exact bet options, and tie/ace configuration semantics are not fully specified.
