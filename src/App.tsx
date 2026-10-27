@@ -3,20 +3,24 @@ import ETFTrading from './components/ETFTrading';
 import FermiChallenge from './components/FermiChallenge';
 import FruitMarket from './components/FruitMarket';
 import MakeMeAMarket from './components/MakeMeAMarket';
+import MarketOfCards from './components/MarketOfCards';
+import MarbleOlympics from './components/MarbleOlympics';
 import MathChallenge from './components/MathChallenge';
 import NextCardBetting from './components/NextCardBetting';
 import ProbabilityBetting from './components/ProbabilityBetting';
 import { GAMES, type GameDefinition } from './data/games';
-import { saveFermiSession, saveFruitSession, saveMarketMakingSession, saveCardSession, saveProbabilitySession, saveETFSession, saveMathSession, loadStats, type LocalStats } from './lib/storage';
+import { saveFermiSession, saveFruitSession, saveMarketMakingSession, saveCardSession, saveProbabilitySession, saveETFSession, saveMarketCardsSession, saveMarbleSession, saveMathSession, loadStats, type LocalStats } from './lib/storage';
 import type { FermiSessionSummary } from './lib/fermiChallenge';
 import type { FruitSessionSummary } from './lib/fruitMarket';
 import type { MarketMakingSessionSummary } from './lib/makeMeAMarket';
 import type { CardSessionSummary } from './lib/nextCardBetting';
 import type { ProbabilitySessionSummary } from './lib/probabilityBetting';
 import type { ETFSessionSummary } from './lib/etfTrading';
+import type { MarketCardsSessionSummary } from './lib/marketOfCards';
+import type { MarbleSessionSummary } from './lib/marbleOlympics';
 import type { MathSessionSummary } from './lib/mathChallenge';
 
-type View = 'overview' | 'math' | 'fermi' | 'fruit' | 'market-making' | 'next-card' | 'probability' | 'etf';
+type View = 'overview' | 'math' | 'fermi' | 'fruit' | 'market-making' | 'market-cards' | 'marble-olympics' | 'next-card' | 'probability' | 'etf';
 
 function formatInteger(value: number): string {
   return new Intl.NumberFormat('en-US').format(value);
@@ -53,6 +57,8 @@ function App() {
     else if (game.slug === 'fermi-questions') setView('fermi');
     else if (game.slug === 'fruit-market') setView('fruit');
     else if (game.slug === 'make-me-a-market') setView('market-making');
+    else if (game.slug === 'market-of-cards') setView('market-cards');
+    else if (game.slug === 'marble-olympics') setView('marble-olympics');
     else if (game.slug === 'next-card-betting') setView('next-card');
     else if (game.slug === 'probability-betting') setView('probability');
     else if (game.slug === 'etf-trading-challenge') setView('etf');
@@ -85,6 +91,14 @@ function App() {
 
   const handleETFComplete = (summary: ETFSessionSummary) => {
     setStats(saveETFSession(summary));
+  };
+
+  const handleMarketCardsComplete = (summary: MarketCardsSessionSummary) => {
+    setStats(saveMarketCardsSession(summary));
+  };
+
+  const handleMarbleComplete = (summary: MarbleSessionSummary) => {
+    setStats(saveMarbleSession(summary));
   };
 
   const resetFocus = () => {
@@ -136,6 +150,22 @@ function App() {
     return (
       <div className="app-frame">
         <ProbabilityBetting onExit={resetFocus} onComplete={handleProbabilityComplete} />
+      </div>
+    );
+  }
+
+  if (view === 'market-cards') {
+    return (
+      <div className="app-frame">
+        <MarketOfCards onExit={resetFocus} onComplete={handleMarketCardsComplete} />
+      </div>
+    );
+  }
+
+  if (view === 'marble-olympics') {
+    return (
+      <div className="app-frame">
+        <MarbleOlympics onExit={resetFocus} onComplete={handleMarbleComplete} />
       </div>
     );
   }

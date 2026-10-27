@@ -92,12 +92,13 @@ export const GAMES: GameDefinition[] = [
     description: 'Trade a simulated marble football final and evaluate side bets as the match evolves.',
     skills: ['Bayesian updating', 'Event-driven pricing', 'Risk control'],
     rules: [
-      'Two teams shoot marbles at two colored goals over a simulated match.',
-      'The main market settles at the product of the two teams’ final marble totals.',
-      'Side bets have stated payout formulas and settle on the final counts.',
-      'The public rules describe historical tournament results as a signal of hidden team quality, but not the full simulation parameters.'
+      'Four prior tournament rounds provide a signal of hidden team and per-color accuracy; the underlying accuracies stay hidden.',
+      'The match runs for 90 game minutes. The 10/20/30-minute settings use about 5/10/15 shots per team per color.',
+      'The main market settles at Team A final total × Team B final total. A goal leaves the quote stale for about five real seconds; the first profitable trade resets it.',
+      'Side bets trade once per market in a 60-real-second batch, at size 1, 5, or 10. This practice version labels its ten payout formulas as local variants because the full official catalogue is not in the supplied rules.',
+      'This is single-player practice; the published multiplayer edge-point leaderboard is not reproduced.'
     ],
-    playable: false,
+    playable: true,
     accent: 'green',
     externalRules: 'https://marketmakinggames.com/games/marble-olympics'
   },
@@ -149,12 +150,12 @@ export const GAMES: GameDefinition[] = [
     description: 'Quote a two-sided market with private cards and update fair value as shared information arrives.',
     skills: ['Conditional expectation', 'Adverse selection', 'Position management'],
     rules: [
-      'The published overview describes a standard deck and two private cards per player.',
-      'Players take turns quoting a bid and ask; others can buy, sell, or pass, and only the first response trades.',
-      'A center card is revealed at each round end.',
-      'The table value is based on all players’ cards and the center cards. The precise timing, deck accounting, and tie conventions require confirmation.'
+      'Each player receives two private cards from a normal deck; three center cards are revealed one at a time.',
+      'Cards 2–10 are worth rank × 10. Red J/Q/K are +110/+120/+130; black J/Q/K are −110/−120/−130. High aces are +140 red and −140 black; low aces are +10 in every suit.',
+      'Players make two-sided quotes and respond to bot markets. Only the first qualifying bot response trades against your quote.',
+      'Final value is the sum of all players’ two-card hands plus the three center cards. One-unit trades and three quote rounds aligned with center reveals are local practice assumptions.'
     ],
-    playable: false,
+    playable: true,
     accent: 'purple',
     externalRules: 'https://marketmakinggames.com/games/market-of-cards'
   },
