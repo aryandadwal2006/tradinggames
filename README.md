@@ -8,7 +8,7 @@ Install dependencies, run the development server with npm run dev, and validate 
 
 ## Current scope
 
-The catalog covers the nine practice formats in the supplied materials. Math Challenge is the first playable module. The remaining modules are being added one by one only when their rules and settlement logic are sufficiently specified.
+The catalog covers all nine formats in the supplied materials. Math Challenge and Fermi Questions are playable; other modules remain clearly marked in development until their state transitions and settlement can be specified and tested. Fermi estimates report transparent factor-error calibration, not an invented replica of the original game's unpublished point curve.
 
 ## Deployment
 
