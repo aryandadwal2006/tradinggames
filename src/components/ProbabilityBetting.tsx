@@ -1,12 +1,10 @@
 import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react';
 import {
   expectedValuePerUnit,
-  fairOdds,
   formatDecimalOdds,
   formatProbability,
   generateProbabilityOffers,
   halfKellyStake,
-  kellyFraction,
   PROBABILITY_DEFAULT_ROUNDS,
   PROBABILITY_EVENT_COUNT,
   PROBABILITY_INITIAL_BANKROLL,
