@@ -13,3 +13,7 @@ The catalog covers all nine formats in the supplied materials. Fruit Market, Fer
 ## Deployment
 
 This is a static Vite application. For Cloudflare Pages, use npm run build as the build command and dist as the output directory. No backend or API keys are required for the current version. Session statistics are saved in the browser on the device running the app.
+
+## Verification
+
+The GitHub Actions workflow checks TypeScript, runs deterministic unit tests for each practice engine, and produces a production Vite build on pushes and pull requests.
