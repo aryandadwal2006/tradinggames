@@ -51,7 +51,7 @@ export const GAMES: GameDefinition[] = [
     difficulty: 'Easy',
     duration: '5 min',
     players: 'Solo',
-    description: 'Decompose unfamiliar quantities into explicit assumptions and an order-of-magnitude estimate.',
+    description: 'Estimate real-world quantities under a short clock, then review your assumptions and multiplicative error.',
     skills: ['Decomposition', 'Calibration', 'Numeracy'],
     rules: [
       'A numerical estimation question is shown and an answer is submitted before the timer expires.',
@@ -59,7 +59,7 @@ export const GAMES: GameDefinition[] = [
       'The public description uses logarithmic closeness and penalizes skipped answers.',
       'The full point-by-point scoring curve and question parameters are not published.'
     ],
-    playable: false,
+    playable: true,
     accent: 'blue',
     externalRules: 'https://marketmakinggames.com/games/fermi-questions'
   },
