@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
 import {
   calculateCardProbabilities,
   CARD_BET_SECONDS,
@@ -70,7 +70,7 @@ export default function NextCardBetting({ onExit, onComplete }: NextCardBettingP
 
   const reference = deck[roundIndex] ?? null;
   const actualNext = deck[roundIndex + 1] ?? null;
-  const unseenCards = reference ? deck.slice(roundIndex + 1) : [];
+  const unseenCards = useMemo(() => reference ? deck.slice(roundIndex + 1) : [], [deck, roundIndex, reference]);
   const probabilities = reference ? calculateCardProbabilities(reference, unseenCards) : null;
   const selectedOdds = probabilities && selectedSide ? getSideProbabilities(probabilities, selectedSide) : null;
   const bestSide = probabilities ? getRecommendedSide(probabilities) : null;
