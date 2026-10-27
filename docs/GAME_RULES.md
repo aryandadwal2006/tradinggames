@@ -20,6 +20,12 @@ The Society Partner Deck and Society Host Guide name these nine formats: Fruit M
 
 ## Implemented modules
 
+### Fruit Market Game
+
+The local module implements the published core loop: two baskets are randomized with 3–8 apples and oranges of each type, fair value is total apples multiplied by total oranges, baskets update after randomized 15–20 second intervals, and over-limit baskets reset. It supports repeated one-unit buys at the ask and sells at the bid. The score is raw trade P&L multiplied by first-click accuracy.
+
+The source describes inflation (2×), deflation (0.5×), and nullification events, but does not publish the platform's quote-generation distribution or complete event timing. The practice version therefore makes its assumptions visible in the setup screen and in `FRUIT_MARKET_CONFIG`: event probabilities, midpoint noise, and half-spread ranges are local practice parameters. Nullification excludes one selected basket from the value calculation, and an event expires at the next basket update. These are explicit practice rules, not claims about undocumented platform internals.
+
 ### Math Challenge
 
 Math Challenge has a working timer, original randomized arithmetic questions, multiple-choice and typed answers, exact rational answer checking, the documented +1/−1 scoring rule, end-of-session review, and local statistics. Questions are generated from a seedable pseudo-random generator so tests can replay the same sequence, while live sessions use a random seed.
@@ -32,7 +38,7 @@ The public rules specify logarithmic closeness, mention that an estimate within 
 
 ## Rules that remain incomplete in public descriptions
 
-- Fruit Market: exact quote generation, precise event timing, and the formal meaning of first-click accuracy need confirmation.
+- Fruit Market: the official quote-generation distribution and exact event timing are not published. The practice version uses explicit configurable assumptions instead of claiming an exact quote clone.
 - Fermi Questions: the complete logarithmic scoring curve and penalties by configuration are not published. The current module uses an explicitly labelled local error metric instead of claiming platform-score compatibility.
 - Probability Betting: event distributions, quote generation, stake constraints, and full scoring details are not published.
 - The Marble Olympics: team-strength model, event timestamps, side-bet generation, payout formulas by bet type, and the full match clock model are not published.
