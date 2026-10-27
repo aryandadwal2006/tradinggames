@@ -212,8 +212,10 @@ export function sampleProbabilityOutcome(
       return rng.int(0, 1) === 1;
     case 'card-face':
       return rng.int(1, 13) >= 11;
-    case 'card-ten-or-higher':
-      return rng.int(1, 13) === 1 || rng.int(10, 13) >= 10;
+    case 'card-ten-or-higher': {
+      const rank = rng.int(1, 13);
+      return rank === 1 || rank >= 10;
+    }
     case 'card-even': {
       const rank = rng.int(1, 13);
       return rank >= 2 && rank <= 10 && rank % 2 === 0;
@@ -260,12 +262,10 @@ export function resolveProbabilityRound(args: {
   }
 
   const events = decisions.map((decision): ProbabilityEventResult => {
-    const { offer, side, stake } = decision;
+    const { offer, stake } = decision;
+    const side: ProbabilitySide = stake === 0 ? 'skip' : decision.side;
     if (!Number.isInteger(stake) || stake < 0) throw new RangeError('Each stake must be a non-negative integer.');
     if (side === 'skip' && stake !== 0) throw new RangeError('Skipped offers cannot have a stake.');
-    if (side !== 'skip' && stake === 0) {
-      // A zero stake is treated as a skip, to keep the accounting explicit.
-    }
     const outcome = sampleProbabilityOutcome(offer.outcomeKind, rng);
     const selectedProbability = side === 'skip' ? null : selectedSideProbability(offer, side);
     const selectedOdds = side === 'yes' ? offer.yesOdds : side === 'no' ? offer.noOdds : null;
@@ -326,7 +326,6 @@ export function summarizeProbabilitySession(
   const bets = events.filter((event) => event.side !== 'skip' && event.stake > 0);
   const opportunities = events.filter((event) => event.positiveEvOpportunity);
   const sizes = events.flatMap((event) => event.sizingEfficiency === null ? [] : [event.sizingEfficiency]);
-  const validBetDecisions = events.filter((event) => event.side !== 'skip' || !event.positiveEvOpportunity);
   const finalBankroll = rounds.at(-1)?.bankrollAfter ?? initialBankroll;
 
   return {
