@@ -2,6 +2,7 @@ import type { FermiSessionSummary } from './fermiChallenge';
 import type { FruitSessionSummary } from './fruitMarket';
 import type { MathSessionSummary } from './mathChallenge';
 import type { MarketMakingSessionSummary } from './makeMeAMarket';
+import type { CardSessionSummary } from './nextCardBetting';
 
 const STORAGE_KEY = 'trading-games.stats.v1';
 const MAX_RECENT_SESSIONS = 20;
@@ -25,6 +26,9 @@ export interface LocalStats {
   marketMakingSessions: number;
   marketMakingBestPnl: number | null;
   marketMakingRecentSessions: MarketMakingSessionSummary[];
+  nextCardSessions: number;
+  nextCardBestBankroll: number | null;
+  nextCardRecentSessions: CardSessionSummary[];
 }
 
 const EMPTY_STATS: LocalStats = {
@@ -45,7 +49,10 @@ const EMPTY_STATS: LocalStats = {
   fruitRecentSessions: [],
   marketMakingSessions: 0,
   marketMakingBestPnl: null,
-  marketMakingRecentSessions: []
+  marketMakingRecentSessions: [],
+  nextCardSessions: 0,
+  nextCardBestBankroll: null,
+  nextCardRecentSessions: []
 };
 
 function validSummary(value: unknown): value is MathSessionSummary {
@@ -100,6 +107,30 @@ function validMarketMakingSummary(value: unknown): value is MarketMakingSessionS
     && typeof candidate.playedAt === 'string';
 }
 
+function validCardSummary(value: unknown): value is CardSessionSummary {
+  if (typeof value !== 'object' || value === null) return false;
+  const candidate = value as Partial<CardSessionSummary>;
+  const nullableNumber = (item: unknown) => item === null || (typeof item === 'number' && Number.isFinite(item));
+  return typeof candidate.rounds === 'number'
+    && typeof candidate.bets === 'number'
+    && typeof candidate.wins === 'number'
+    && typeof candidate.losses === 'number'
+    && typeof candidate.pushes === 'number'
+    && typeof candidate.skipped === 'number'
+    && typeof candidate.initialBankroll === 'number'
+    && typeof candidate.finalBankroll === 'number'
+    && typeof candidate.netPnl === 'number'
+    && typeof candidate.positiveEvBets === 'number'
+    && nullableNumber(candidate.positiveEvBetRate)
+    && typeof candidate.opportunities === 'number'
+    && nullableNumber(candidate.opportunityParticipation)
+    && nullableNumber(candidate.sizingEfficiency)
+    && typeof candidate.suitCount === 'number'
+    && typeof candidate.aceHigh === 'boolean'
+    && typeof candidate.durationSeconds === 'number'
+    && typeof candidate.playedAt === 'string';
+}
+
 function count(value: unknown): number {
   return typeof value === 'number' && Number.isFinite(value) ? Math.max(0, Math.floor(value)) : 0;
 }
@@ -127,6 +158,9 @@ function parseStats(raw: string | null): LocalStats {
     const marketMakingRecentSessions = Array.isArray(candidate.marketMakingRecentSessions)
       ? candidate.marketMakingRecentSessions.filter(validMarketMakingSummary).slice(0, MAX_RECENT_SESSIONS)
       : [];
+    const nextCardRecentSessions = Array.isArray(candidate.nextCardRecentSessions)
+      ? candidate.nextCardRecentSessions.filter(validCardSummary).slice(0, MAX_RECENT_SESSIONS)
+      : [];
     return {
       version: 1,
       sessions: count(candidate.sessions),
@@ -149,7 +183,12 @@ function parseStats(raw: string | null): LocalStats {
       marketMakingBestPnl: typeof candidate.marketMakingBestPnl === 'number' && Number.isFinite(candidate.marketMakingBestPnl)
         ? candidate.marketMakingBestPnl
         : null,
-      marketMakingRecentSessions
+      marketMakingRecentSessions,
+      nextCardSessions: count(candidate.nextCardSessions),
+      nextCardBestBankroll: typeof candidate.nextCardBestBankroll === 'number' && Number.isFinite(candidate.nextCardBestBankroll)
+        ? candidate.nextCardBestBankroll
+        : null,
+      nextCardRecentSessions
     };
   } catch {
     return { ...EMPTY_STATS };
@@ -236,6 +275,22 @@ export function saveMarketMakingSession(summary: MarketMakingSessionSummary): Lo
       ? summary.rawProfit
       : Math.max(previous.marketMakingBestPnl, summary.rawProfit),
     marketMakingRecentSessions: [summary, ...previous.marketMakingRecentSessions].slice(0, MAX_RECENT_SESSIONS),
+    lastPlayedAt: summary.playedAt
+  };
+  persistStats(next);
+  return next;
+}
+
+export function saveCardSession(summary: CardSessionSummary): LocalStats {
+  const previous = loadStats();
+  const next: LocalStats = {
+    ...previous,
+    sessions: previous.sessions + 1,
+    nextCardSessions: previous.nextCardSessions + 1,
+    nextCardBestBankroll: previous.nextCardBestBankroll === null
+      ? summary.finalBankroll
+      : Math.max(previous.nextCardBestBankroll, summary.finalBankroll),
+    nextCardRecentSessions: [summary, ...previous.nextCardRecentSessions].slice(0, MAX_RECENT_SESSIONS),
     lastPlayedAt: summary.playedAt
   };
   persistStats(next);
