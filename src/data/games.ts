@@ -165,7 +165,7 @@ export const GAMES: GameDefinition[] = [
     difficulty: 'Hard',
     duration: '10 min',
     players: 'Solo vs opponents',
-    description: 'Compare ETF quotes with constituent-stock quotes and act when the executable basket is mispriced.',
+    description: 'Trade an ETF against its underlying basket, catch executable arbitrage, and react to news before other traders.,
     skills: ['Mental math', 'Arbitrage', 'Execution speed'],
     rules: [
       'Each ETF contains two to four stocks and the prices update during the session.',
@@ -173,7 +173,7 @@ export const GAMES: GameDefinition[] = [
       'After a trade, constituent prices reset or reduce the arbitrage opportunity while the ETF can continue trending.',
       'The exact price process, trade quantities, transaction costs, and update schedule are not specified in the public overview.'
     ],
-    playable: false,
+    playable: true,
     accent: 'yellow',
     externalRules: 'https://marketmakinggames.com/games/etf-challenge'
   },
