@@ -69,6 +69,6 @@ The public rules specify logarithmic closeness, mention that an estimate within 
 - Next Card Betting: higher/lower and tie settlement are implemented. The advertised inside/outside-range mode and official skill-score formula need additional rule detail before they can be reproduced faithfully. The current deck policy and session controls are explicit practice settings.
 - Make Me a Market: the official question bank, exact default spread cap, repeated-quote/trade sequence, and final leaderboard point rules are not fully published. The current implementation explicitly uses a local question bank, one informed-counterparty decision per round, and a selectable practice spread cap.
 - Market of Cards: complete timing rules, trading limits, deck accounting, inventory settlement, and tie conventions need confirmation.
-- ETF Trading Challenge: price process, trade size, news generation, transaction costs, and reset mechanics need confirmation.
+- ETF Trading Challenge: the local practice module defines a configurable, tested price/news process and distinct reaction-driven bots. These are explicit practice assumptions because the original full price process is not public.
 
 These modules stay marked as in development until their state transitions and scoring can be specified and tested without guesswork. Opponent agents for games that need an adversarial table will be added as distinct, testable policies rather than identical random clickers.
