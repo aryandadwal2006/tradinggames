@@ -41,6 +41,7 @@ export interface FruitTrade {
 
 export interface FruitSessionSummary {
   rawProfit: number;
+  score: number;
   firstClickAccuracy: number | null;
   firstClickTrials: number;
   profitableFirstClicks: number;
@@ -236,8 +237,10 @@ export function summarizeFruitSession(
   playedAt = new Date().toISOString()
 ): FruitSessionSummary {
   const firstClick = calculateFirstClickAccuracy(trades);
+  const rawProfit = trades.reduce((sum, trade) => sum + trade.pnl, 0);
   return {
-    rawProfit: trades.reduce((sum, trade) => sum + trade.pnl, 0),
+    rawProfit,
+    score: calculateFruitScore(rawProfit, firstClick.accuracy),
     firstClickAccuracy: firstClick.accuracy,
     firstClickTrials: firstClick.trials,
     profitableFirstClicks: firstClick.profitable,
