@@ -3,6 +3,7 @@ import type { FruitSessionSummary } from './fruitMarket';
 import type { MathSessionSummary } from './mathChallenge';
 import type { MarketMakingSessionSummary } from './makeMeAMarket';
 import type { CardSessionSummary } from './nextCardBetting';
+import type { ProbabilitySessionSummary } from './probabilityBetting';
 
 const STORAGE_KEY = 'trading-games.stats.v1';
 const MAX_RECENT_SESSIONS = 20;
@@ -29,6 +30,9 @@ export interface LocalStats {
   nextCardSessions: number;
   nextCardBestBankroll: number | null;
   nextCardRecentSessions: CardSessionSummary[];
+  probabilitySessions: number;
+  probabilityBestBankroll: number | null;
+  probabilityRecentSessions: ProbabilitySessionSummary[];
 }
 
 const EMPTY_STATS: LocalStats = {
@@ -52,7 +56,10 @@ const EMPTY_STATS: LocalStats = {
   marketMakingRecentSessions: [],
   nextCardSessions: 0,
   nextCardBestBankroll: null,
-  nextCardRecentSessions: []
+  nextCardRecentSessions: [],
+  probabilitySessions: 0,
+  probabilityBestBankroll: null,
+  probabilityRecentSessions: []
 };
 
 function validSummary(value: unknown): value is MathSessionSummary {
@@ -131,6 +138,26 @@ function validCardSummary(value: unknown): value is CardSessionSummary {
     && typeof candidate.playedAt === 'string';
 }
 
+function validProbabilitySummary(value: unknown): value is ProbabilitySessionSummary {
+  if (typeof value !== 'object' || value === null) return false;
+  const candidate = value as Partial<ProbabilitySessionSummary>;
+  const nullableNumber = (item: unknown) => item === null || (typeof item === 'number' && Number.isFinite(item));
+  return typeof candidate.rounds === 'number'
+    && typeof candidate.opportunities === 'number'
+    && typeof candidate.bets === 'number'
+    && typeof candidate.wins === 'number'
+    && typeof candidate.losses === 'number'
+    && typeof candidate.skipped === 'number'
+    && nullableNumber(candidate.decisionQuality)
+    && nullableNumber(candidate.opportunityParticipation)
+    && nullableNumber(candidate.sizingEfficiency)
+    && typeof candidate.initialBankroll === 'number'
+    && typeof candidate.finalBankroll === 'number'
+    && typeof candidate.netPnl === 'number'
+    && typeof candidate.durationSeconds === 'number'
+    && typeof candidate.playedAt === 'string';
+}
+
 function count(value: unknown): number {
   return typeof value === 'number' && Number.isFinite(value) ? Math.max(0, Math.floor(value)) : 0;
 }
@@ -161,6 +188,9 @@ function parseStats(raw: string | null): LocalStats {
     const nextCardRecentSessions = Array.isArray(candidate.nextCardRecentSessions)
       ? candidate.nextCardRecentSessions.filter(validCardSummary).slice(0, MAX_RECENT_SESSIONS)
       : [];
+    const probabilityRecentSessions = Array.isArray(candidate.probabilityRecentSessions)
+      ? candidate.probabilityRecentSessions.filter(validProbabilitySummary).slice(0, MAX_RECENT_SESSIONS)
+      : [];
     return {
       version: 1,
       sessions: count(candidate.sessions),
@@ -188,7 +218,12 @@ function parseStats(raw: string | null): LocalStats {
       nextCardBestBankroll: typeof candidate.nextCardBestBankroll === 'number' && Number.isFinite(candidate.nextCardBestBankroll)
         ? candidate.nextCardBestBankroll
         : null,
-      nextCardRecentSessions
+      nextCardRecentSessions,
+      probabilitySessions: count(candidate.probabilitySessions),
+      probabilityBestBankroll: typeof candidate.probabilityBestBankroll === 'number' && Number.isFinite(candidate.probabilityBestBankroll)
+        ? candidate.probabilityBestBankroll
+        : null,
+      probabilityRecentSessions
     };
   } catch {
     return { ...EMPTY_STATS };
@@ -291,6 +326,22 @@ export function saveCardSession(summary: CardSessionSummary): LocalStats {
       ? summary.finalBankroll
       : Math.max(previous.nextCardBestBankroll, summary.finalBankroll),
     nextCardRecentSessions: [summary, ...previous.nextCardRecentSessions].slice(0, MAX_RECENT_SESSIONS),
+    lastPlayedAt: summary.playedAt
+  };
+  persistStats(next);
+  return next;
+}
+
+export function saveProbabilitySession(summary: ProbabilitySessionSummary): LocalStats {
+  const previous = loadStats();
+  const next: LocalStats = {
+    ...previous,
+    sessions: previous.sessions + 1,
+    probabilitySessions: previous.probabilitySessions + 1,
+    probabilityBestBankroll: previous.probabilityBestBankroll === null
+      ? summary.finalBankroll
+      : Math.max(previous.probabilityBestBankroll, summary.finalBankroll),
+    probabilityRecentSessions: [summary, ...previous.probabilityRecentSessions].slice(0, MAX_RECENT_SESSIONS),
     lastPlayedAt: summary.playedAt
   };
   persistStats(next);
