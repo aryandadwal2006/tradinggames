@@ -3,14 +3,16 @@ import FermiChallenge from './components/FermiChallenge';
 import FruitMarket from './components/FruitMarket';
 import MakeMeAMarket from './components/MakeMeAMarket';
 import MathChallenge from './components/MathChallenge';
+import NextCardBetting from './components/NextCardBetting';
 import { GAMES, type GameDefinition } from './data/games';
-import { saveFermiSession, saveFruitSession, saveMarketMakingSession, saveMathSession, loadStats, type LocalStats } from './lib/storage';
+import { saveFermiSession, saveFruitSession, saveMarketMakingSession, saveCardSession, saveMathSession, loadStats, type LocalStats } from './lib/storage';
 import type { FermiSessionSummary } from './lib/fermiChallenge';
 import type { FruitSessionSummary } from './lib/fruitMarket';
 import type { MarketMakingSessionSummary } from './lib/makeMeAMarket';
+import type { CardSessionSummary } from './lib/nextCardBetting';
 import type { MathSessionSummary } from './lib/mathChallenge';
 
-type View = 'overview' | 'math' | 'fermi' | 'fruit' | 'market-making';
+type View = 'overview' | 'math' | 'fermi' | 'fruit' | 'market-making' | 'next-card';
 
 function formatInteger(value: number): string {
   return new Intl.NumberFormat('en-US').format(value);
@@ -47,6 +49,7 @@ function App() {
     else if (game.slug === 'fermi-questions') setView('fermi');
     else if (game.slug === 'fruit-market') setView('fruit');
     else if (game.slug === 'make-me-a-market') setView('market-making');
+    else if (game.slug === 'next-card-betting') setView('next-card');
     else setView('overview');
   };
 
@@ -64,6 +67,10 @@ function App() {
 
   const handleMarketMakingComplete = (summary: MarketMakingSessionSummary) => {
     setStats(saveMarketMakingSession(summary));
+  };
+
+  const handleCardComplete = (summary: CardSessionSummary) => {
+    setStats(saveCardSession(summary));
   };
 
   const resetFocus = () => {
@@ -99,6 +106,14 @@ function App() {
     return (
       <div className="app-frame">
         <MakeMeAMarket onExit={resetFocus} onComplete={handleMarketMakingComplete} />
+      </div>
+    );
+  }
+
+  if (view === 'next-card') {
+    return (
+      <div className="app-frame">
+        <NextCardBetting onExit={resetFocus} onComplete={handleCardComplete} />
       </div>
     );
   }
@@ -161,6 +176,7 @@ function App() {
                 <StatCard label="Best Fermi calibration" value={stats.fermiBestMedianFactor === null ? '—' : '× ' + formatInteger(Math.round(stats.fermiBestMedianFactor * 100) / 100)} note={stats.fermiSessions + ' drills · lower is better'} icon="≈" />
               <StatCard label="Best Fruit score" value={stats.fruitBestScore === null ? '—' : (stats.fruitBestScore > 0 ? '+' : '') + formatInteger(Math.round(stats.fruitBestScore * 100) / 100)} note={stats.fruitSessions + ' markets · adjusted P&L'} icon="↔" />
               <StatCard label="Best market P&L" value={stats.marketMakingBestPnl === null ? '—' : (stats.marketMakingBestPnl > 0 ? '+' : '') + formatInteger(Math.round(stats.marketMakingBestPnl * 100) / 100)} note={stats.marketMakingSessions + ' market sessions'} icon="⇄" />
+              <StatCard label="Best card bankroll" value={stats.nextCardBestBankroll === null ? '—' : formatInteger(stats.nextCardBestBankroll)} note={stats.nextCardSessions + ' card sessions'} icon="♠" />
               </section>
 
               <section className="featured-section">
