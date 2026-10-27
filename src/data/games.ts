@@ -108,15 +108,15 @@ export const GAMES: GameDefinition[] = [
     difficulty: 'Easy',
     duration: '5 min',
     players: 'Solo',
-    description: 'Estimate card probabilities, compare higher/lower bets, and choose a stake suited to the edge.',
+    description: 'Count unseen cards, calculate conditional higher/lower odds, and size each wager with Kelly discipline.',
     skills: ['Card counting', 'Conditional probability', 'Kelly sizing'],
     rules: [
       'A reference card is revealed, then a stake is placed on whether the next card is higher or lower.',
       'A correct prediction wins the stake, an incorrect prediction loses it, and a tie returns it.',
       'The rules mention configurable suits and ace values.',
-      'The exact skill-score calculation, deck-reset behavior, and all settings need to be pinned down before a faithful module is shipped.'
+      'This practice module uses a without-replacement deck, selectable suit count and ace value, and transparent decision-quality metrics rather than the unpublished platform point formula.'
     ],
-    playable: false,
+    playable: true,
     accent: 'red',
     externalRules: 'https://marketmakinggames.com/games/next-card'
   },
