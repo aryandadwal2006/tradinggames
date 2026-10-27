@@ -123,7 +123,7 @@ function BracketTable({ setup }: { setup: MarbleMatchSetup }) {
 export default function MarbleOlympics({ onExit, onComplete }: MarbleOlympicsProps) {
   const [phase, setPhase] = useState<'setup' | 'playing' | 'finished'>('setup');
   const [duration, setDuration] = useState<DurationOption>(10);
-  const [playbackSpeed, setPlaybackSpeed] = useState<PlaybackSpeed>(3);
+  const [playbackSpeed, setPlaybackSpeed] = useState<PlaybackSpeed>(1);
   const [setup, setSetup] = useState<MarbleMatchSetup | null>(null);
   const [counts, setCounts] = useState<LiveMarbleCounts>(ZERO_MARBLE_COUNTS);
   const [realElapsedMs, setRealElapsedMs] = useState(0);
@@ -158,7 +158,7 @@ export default function MarbleOlympics({ onExit, onComplete }: MarbleOlympicsPro
     () => setup ? estimateMarbleFairValues(setup, counts) : null,
     [counts, setup]
   );
-  const mainSpread = fairSnapshot ? spreadFor(fairSnapshot.mainFairValue) : 1;
+  const mainSpread = spreadFor(mainMid);
   const marketBid = mainMid - mainSpread;
   const marketAsk = mainMid + mainSpread;
   const finalTotals = useMemo(() => calculateFinalMarbleTotals(counts), [counts]);
@@ -392,6 +392,10 @@ export default function MarbleOlympics({ onExit, onComplete }: MarbleOlympicsPro
   const activeTimeline = timeline.filter((entry) => entry.minute <= replayMinute).slice().reverse().slice(0, 12);
   const currentMainMark = fairSnapshot ? mainPosition.cash + mainPosition.inventory * fairSnapshot.mainFairValue : 0;
   const replayPnlTrades = replayTrades.length + replaySideTrades.length;
+  const replayTradeRows = [
+    ...replayTrades.map((trade) => ({ id: 'main-' + trade.id, minute: trade.minute, market: 'Main market', direction: trade.direction, size: trade.size, price: trade.price, fair: trade.fairAtTrade, edge: trade.edge })),
+    ...replaySideTrades.map((trade) => ({ id: 'side-' + trade.id, minute: trade.minute, market: trade.market.label, direction: trade.direction, size: trade.size, price: trade.price, fair: trade.fairAtTrade, edge: trade.edge }))
+  ].sort((left, right) => right.minute - left.minute);
   const finishedFinalTotals: FinalMarbleTotals = finalTotals;
 
   return (
@@ -549,6 +553,25 @@ export default function MarbleOlympics({ onExit, onComplete }: MarbleOlympicsPro
             <input type="range" min="0" max="90" step="1" value={replayMinute} onChange={(event) => setReplayMinute(Number(event.target.value))} />
           </label>
           <div className="mo-replay-score"><span>Team A <strong>{replayScore.A}</strong></span><span>Team B <strong>{replayScore.B}</strong></span><span>{activeTimeline.length} visible shot events</span><span>{replayPnlTrades} trades by minute {replayMinute}</span></div>
+          <h3>Trades and information at execution</h3>
+          <p className="mo-subtle">Only trades at or before the selected minute are shown. Recorded fair value and quoted price are the values available at execution, not a hindsight revaluation.</p>
+          {replayTradeRows.length ? (
+            <div className="mo-table-wrap">
+              <table className="mo-table">
+                <thead><tr><th>Minute</th><th>Market</th><th>Action / size</th><th>Trade price</th><th>Recorded fair</th><th>Edge at trade</th></tr></thead>
+                <tbody>{replayTradeRows.map((trade) => (
+                  <tr key={trade.id}>
+                    <td>{trade.minute.toFixed(1)}'</td>
+                    <td>{trade.market}</td>
+                    <td>{trade.direction} ×{trade.size}</td>
+                    <td>{formatMarbleNumber(trade.price)}</td>
+                    <td>{formatMarbleNumber(trade.fair)}</td>
+                    <td className={trade.edge >= 0 ? 'mo-positive' : 'mo-negative'}>{signed(trade.edge)}</td>
+                  </tr>
+                ))}</tbody>
+              </table>
+            </div>
+          ) : <p className="mo-subtle">No trades had occurred at this replay time.</p>}
           <div className="mo-timeline-list">
             {activeTimeline.length ? activeTimeline.map((entry) => (
               <div className="mo-timeline-item" key={entry.id}><span className="mo-minute-chip">{entry.minute}'</span><ShotMark color={entry.color} /><strong>Team {entry.team}</strong><span>{entry.scored ? 'GOAL' : 'Miss'}</span><span className="mo-subtle">Model fair at shot: {formatMarbleNumber(entry.fairValue)}</span></div>
