@@ -1,3 +1,4 @@
+import type { FermiSessionSummary } from './fermiChallenge';
 import type { MathSessionSummary } from './mathChallenge';
 
 const STORAGE_KEY = 'trading-games.stats.v1';
@@ -11,6 +12,10 @@ export interface LocalStats {
   totalIncorrect: number;
   recentSessions: MathSessionSummary[];
   lastPlayedAt: string | null;
+  fermiSessions: number;
+  fermiRounds: number;
+  fermiBestMedianFactor: number | null;
+  fermiRecentSessions: FermiSessionSummary[];
 }
 
 const EMPTY_STATS: LocalStats = {
@@ -20,7 +25,11 @@ const EMPTY_STATS: LocalStats = {
   totalCorrect: 0,
   totalIncorrect: 0,
   recentSessions: [],
-  lastPlayedAt: null
+  lastPlayedAt: null,
+  fermiSessions: 0,
+  fermiRounds: 0,
+  fermiBestMedianFactor: null,
+  fermiRecentSessions: []
 };
 
 function validSummary(value: unknown): value is MathSessionSummary {
@@ -32,6 +41,23 @@ function validSummary(value: unknown): value is MathSessionSummary {
     && typeof candidate.mode === 'string'
     && typeof candidate.durationSeconds === 'number'
     && typeof candidate.playedAt === 'string';
+}
+
+function validFermiSummary(value: unknown): value is FermiSessionSummary {
+  if (typeof value !== 'object' || value === null) return false;
+  const candidate = value as Partial<FermiSessionSummary>;
+  const nullableNumber = (item: unknown) => item === null || typeof item === 'number';
+  return typeof candidate.questionCount === 'number'
+    && typeof candidate.submitted === 'number'
+    && typeof candidate.skipped === 'number'
+    && nullableNumber(candidate.medianFactorError)
+    && nullableNumber(candidate.geometricMeanFactorError)
+    && typeof candidate.durationSeconds === 'number'
+    && typeof candidate.playedAt === 'string';
+}
+
+function count(value: unknown): number {
+  return typeof value === 'number' && Number.isFinite(value) ? Math.max(0, Math.floor(value)) : 0;
 }
 
 function parseStats(raw: string | null): LocalStats {
@@ -48,17 +74,34 @@ function parseStats(raw: string | null): LocalStats {
       return { ...EMPTY_STATS };
     }
     const recentSessions = candidate.recentSessions.filter(validSummary).slice(0, MAX_RECENT_SESSIONS);
+    const fermiRecentSessions = Array.isArray(candidate.fermiRecentSessions)
+      ? candidate.fermiRecentSessions.filter(validFermiSummary).slice(0, MAX_RECENT_SESSIONS)
+      : [];
     return {
       version: 1,
-      sessions: Math.max(0, Math.floor(candidate.sessions)),
-      bestScore: typeof candidate.bestScore === 'number' ? candidate.bestScore : null,
-      totalCorrect: Math.max(0, Math.floor(candidate.totalCorrect)),
-      totalIncorrect: Math.max(0, Math.floor(candidate.totalIncorrect)),
+      sessions: count(candidate.sessions),
+      bestScore: typeof candidate.bestScore === 'number' && Number.isFinite(candidate.bestScore) ? candidate.bestScore : null,
+      totalCorrect: count(candidate.totalCorrect),
+      totalIncorrect: count(candidate.totalIncorrect),
       recentSessions,
-      lastPlayedAt: typeof candidate.lastPlayedAt === 'string' ? candidate.lastPlayedAt : null
+      lastPlayedAt: typeof candidate.lastPlayedAt === 'string' ? candidate.lastPlayedAt : null,
+      fermiSessions: count(candidate.fermiSessions),
+      fermiRounds: count(candidate.fermiRounds),
+      fermiBestMedianFactor: typeof candidate.fermiBestMedianFactor === 'number' && Number.isFinite(candidate.fermiBestMedianFactor)
+        ? candidate.fermiBestMedianFactor
+        : null,
+      fermiRecentSessions
     };
   } catch {
     return { ...EMPTY_STATS };
+  }
+}
+
+function persistStats(stats: LocalStats): void {
+  try {
+    if (typeof window !== 'undefined') window.localStorage.setItem(STORAGE_KEY, JSON.stringify(stats));
+  } catch {
+    // Keep the current session usable when storage is blocked or full.
   }
 }
 
@@ -74,7 +117,7 @@ export function loadStats(): LocalStats {
 export function saveMathSession(summary: MathSessionSummary): LocalStats {
   const previous = loadStats();
   const next: LocalStats = {
-    version: 1,
+    ...previous,
     sessions: previous.sessions + 1,
     bestScore: previous.bestScore === null ? summary.score : Math.max(previous.bestScore, summary.score),
     totalCorrect: previous.totalCorrect + summary.correct,
@@ -82,11 +125,27 @@ export function saveMathSession(summary: MathSessionSummary): LocalStats {
     recentSessions: [summary, ...previous.recentSessions].slice(0, MAX_RECENT_SESSIONS),
     lastPlayedAt: summary.playedAt
   };
-  try {
-    if (typeof window !== 'undefined') window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-  } catch {
-    // Keep the current session usable when storage is blocked or full.
-  }
+  persistStats(next);
+  return next;
+}
+
+export function saveFermiSession(summary: FermiSessionSummary): LocalStats {
+  const previous = loadStats();
+  const validFactor = summary.medianFactorError;
+  const next: LocalStats = {
+    ...previous,
+    sessions: previous.sessions + 1,
+    fermiSessions: previous.fermiSessions + 1,
+    fermiRounds: previous.fermiRounds + summary.questionCount,
+    fermiBestMedianFactor: validFactor === null
+      ? previous.fermiBestMedianFactor
+      : previous.fermiBestMedianFactor === null
+        ? validFactor
+        : Math.min(previous.fermiBestMedianFactor, validFactor),
+    fermiRecentSessions: [summary, ...previous.fermiRecentSessions].slice(0, MAX_RECENT_SESSIONS),
+    lastPlayedAt: summary.playedAt
+  };
+  persistStats(next);
   return next;
 }
 
