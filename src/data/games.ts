@@ -127,15 +127,15 @@ export const GAMES: GameDefinition[] = [
     difficulty: 'Medium',
     duration: '10 min',
     players: 'Solo',
-    description: 'Quote a confidence interval, make a market around a numerical answer, and manage inventory.',
+    description: 'Set a confidence interval, quote a two-sided market, and learn when an informed counterparty can pick you off.',
     skills: ['Bid/ask quoting', 'Inventory risk', 'P&L reasoning'],
     rules: [
       'The first phase asks for a wide bid-ask interval representing a 95% confidence interval.',
       'In the market-making phase, a computer counterparty trades when the bid is above the answer or the ask is below it.',
       'The closing review asks about position, maximum guaranteed loss, break-even, and P&L at specified values.',
-      'The public rules do not fully specify counterparty behavior or the exact question bank.'
+      'This practice version makes the maximum spread, reference question bank, and session scoring visible instead of claiming to reproduce undocumented platform defaults.'
     ],
-    playable: false,
+    playable: true,
     accent: 'cyan',
     externalRules: 'https://marketmakinggames.com/games/make-me-a-market'
   },
