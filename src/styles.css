@@ -321,3 +321,49 @@ button:disabled { opacity: .42; cursor: not-allowed; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
 }
+
+.fermi-intro-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 9px; margin: 25px 0 13px; }
+.fermi-intro-grid > div { display: flex; flex-direction: column; gap: 5px; padding: 13px 14px; background: #151b23; border: 1px solid #2a323c; border-radius: 6px; }
+.fermi-intro-grid strong { color: #dce9e0; font: 600 23px var(--head); }
+.fermi-intro-grid span { color: #808c9a; font-size: 10px; }
+.fermi-method-note { border: 1px solid #2a343d; border-left: 2px solid #82cba0; border-radius: 5px; padding: 13px 15px; margin: 0 0 20px; background: rgba(106, 177, 130, .035); }
+.fermi-method-note strong { color: #c3d7ca; font-size: 11px; font-weight: 600; }
+.fermi-method-note p { color: #82908d; margin: 7px 0 0; font-size: 10px; line-height: 1.7; }
+.fermi-progress { height: 3px; overflow: hidden; background: #1f2830; border-radius: 99px; margin: 0 0 12px; }
+.fermi-progress span { display: block; height: 100%; background: #84dba9; transition: width .15s ease; }
+.fermi-question-card { min-height: 335px; }
+.fermi-question-card h2, .fermi-explanation-card h2 { margin: 25px 0 8px; color: #eef2f5; font: 600 22px var(--head); letter-spacing: -.5px; }
+.fermi-prompt { max-width: 650px; margin: 0 auto 23px; color: #abb6c1; font-size: clamp(15px, 2vw, 19px); line-height: 1.6; text-align: center; padding: 7px 0 4px; }
+.fermi-answer-form { margin-top: 15px; }
+.fermi-actions { max-width: 620px; margin: 20px auto 0; padding-top: 13px; border-top: 1px solid #262e38; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.fermi-actions > span { color: #697684; font-size: 9px; }
+.fermi-actions .text-button { color: #9ca8b4; }
+.fermi-error { max-width: 620px; margin: 10px auto 0; color: #efaaaa; font-size: 11px; }
+.fermi-explanation-card { padding-bottom: 24px; }
+.fermi-explanation-card h2 { margin-top: 9px; }
+.fermi-explanation { margin: 0; color: #a9b4c0; font-size: 13px; line-height: 1.7; }
+.fermi-decomposition { margin-top: 22px; padding: 15px; border: 1px solid #2b343e; border-radius: 6px; background: #151b23; }
+.fermi-decomposition > span { color: #82918e; font: 9px var(--mono); letter-spacing: .85px; }
+.fermi-decomposition p { margin: 8px 0 0; color: #aab5bf; font-size: 11px; line-height: 1.7; }
+.fermi-result-callout { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 13px 15px; margin-top: 12px; background: rgba(111, 203, 147, .07); border: 1px solid #304b3a; border-radius: 6px; color: #a4e7bb; font-size: 11px; }
+.fermi-result-callout small { color: #91a39a; font-size: 10px; }
+.fermi-result-skipped { background: rgba(214, 162, 99, .06); border-color: #514332; color: #e2bb85; }
+.fermi-reveal-footer { display: flex; justify-content: space-between; align-items: center; gap: 15px; margin-top: 21px; }
+.fermi-reveal-footer > span { color: #728091; font-size: 10px; line-height: 1.6; max-width: 430px; }
+.fermi-results-panel .result-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.fermi-result-grid strong { font-size: 15px; }
+.fermi-review-row { grid-template-columns: 28px minmax(0, 1fr) minmax(105px, auto); }
+.fermi-review-row .review-mark { font: 9px var(--mono); }
+.fermi-review-row .review-answer strong { white-space: nowrap; }
+@media (max-width: 580px) {
+  .fermi-intro-grid { gap: 6px; }
+  .fermi-intro-grid > div { padding: 10px 8px; }
+  .fermi-intro-grid strong { font-size: 20px; }
+  .fermi-intro-grid span { font-size: 9px; line-height: 1.45; }
+  .fermi-actions, .fermi-reveal-footer { align-items: flex-start; flex-direction: column; }
+  .fermi-actions > span { padding-left: 0; }
+  .fermi-result-callout { align-items: flex-start; flex-direction: column; gap: 6px; }
+  .fermi-results-panel .result-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .fermi-review-row { grid-template-columns: 24px minmax(0, 1fr); }
+  .fermi-review-row .review-answer { grid-column: 2; }
+}
