@@ -6,6 +6,7 @@ import {
   computeFruitFairValue,
   createFruitMarket,
   executeFruitTrade,
+  summarizeFruitSession,
   FRUIT_MARKET_CONFIG,
   type FruitMarketState,
   type FruitTrade
@@ -70,11 +71,12 @@ describe('Fruit Market generation', () => {
   });
 
   it('counts accuracy only on the first trade per quote', () => {
+    const market = deterministicMarket();
     const trades = [
-      { ...executeFruitTrade(deterministicMarket(), 'buy', '1', true, 1), pnl: 5 },
-      { ...executeFruitTrade(deterministicMarket(), 'buy', '2', false, 2), pnl: -100 },
-      { ...executeFruitTrade(deterministicMarket(), 'sell', '3', true, 3), pnl: -2 },
-      { ...executeFruitTrade(deterministicMarket(), 'buy', '4', true, 4), pnl: 4 }
+      { ...executeFruitTrade(market, 'buy', '1', true, 1), pnl: 5 },
+      { ...executeFruitTrade(market, 'buy', '2', false, 2), pnl: -100 },
+      { ...executeFruitTrade({ ...market, quoteId: 4 }, 'sell', '3', true, 3), pnl: -2 },
+      { ...executeFruitTrade({ ...market, quoteId: 5 }, 'buy', '4', true, 4), pnl: 4 }
     ] satisfies FruitTrade[];
     const accuracy = calculateFirstClickAccuracy(trades);
     expect(accuracy.trials).toBe(3);
@@ -86,5 +88,18 @@ describe('Fruit Market generation', () => {
     expect(calculateFruitScore(90, 0.8)).toBe(72);
     expect(calculateFruitScore(90, null)).toBe(0);
     expect(() => calculateFruitScore(1, 1.1)).toThrow(RangeError);
+  });
+
+  it('summarizes trades with the same score definition shown in the results screen', () => {
+    const trades = [
+      { ...executeFruitTrade(deterministicMarket(), 'buy', '1', true, 1), pnl: 10 },
+      { ...executeFruitTrade({ ...deterministicMarket(), quoteId: 4 }, 'sell', '2', true, 2), pnl: -5 }
+    ];
+    // One of two first clicks is profitable: 50% accuracy × raw P&L of 5 = 2.5.
+    const summary = summarizeFruitSession(trades, 30, '2026-10-27T00:00:00.000Z');
+    expect(summary.rawProfit).toBe(5);
+    expect(summary.firstClickAccuracy).toBe(0.5);
+    expect(summary.score).toBe(2.5);
+    expect(summary.trades).toBe(2);
   });
 });
