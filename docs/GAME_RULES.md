@@ -20,6 +20,12 @@ The Society Partner Deck and Society Host Guide name these nine formats: Fruit M
 
 ## Implemented modules
 
+### Next Card Betting
+
+The higher/lower mode uses a shuffled standard-rank deck with one to four suits, an adjustable ace value, and draws without replacement. At each decision the player sees the current reference card and can compute exact probabilities from all cards still unseen. Stakes cannot exceed the current bankroll. A correct prediction wins the stake, an incorrect prediction loses it, and a tie returns it. The module provides a half-Kelly stake guide and records expected-value decision quality and sizing efficiency.
+
+The public page also mentions an inside/outside-range mode but its detailed page does not specify the full round mechanics for that mode. It is not silently approximated here. Session length, 15-second decision timer, initial bankroll, and local calibration metrics are practice settings, not claims about the platform's default settings or unpublished leaderboard formula.
+
 ### Make Me a Market
 
 The practice module uses an original local question bank, shuffled into five-question sessions. Each question has a confidence-interval phase followed by a two-sided quote. A simulated informed counterparty buys at the ask only when the ask is below the reference answer, sells at the bid only when the bid is above the answer, and otherwise passes. Trade P&L is marked to the reference answer.
@@ -48,7 +54,7 @@ The public rules specify logarithmic closeness, mention that an estimate within 
 - Fermi Questions: the complete logarithmic scoring curve and penalties by configuration are not published. The current module uses an explicitly labelled local error metric instead of claiming platform-score compatibility.
 - Probability Betting: event distributions, quote generation, stake constraints, and full scoring details are not published.
 - The Marble Olympics: team-strength model, event timestamps, side-bet generation, payout formulas by bet type, and the full match clock model are not published.
-- Next Card Betting: precise score formula, shoe/deck reset policy, exact bet options, and tie/ace configuration semantics are not fully specified.
+- Next Card Betting: higher/lower and tie settlement are implemented. The advertised inside/outside-range mode and official skill-score formula need additional rule detail before they can be reproduced faithfully. The current deck policy and session controls are explicit practice settings.
 - Make Me a Market: the official question bank, exact default spread cap, repeated-quote/trade sequence, and final leaderboard point rules are not fully published. The current implementation explicitly uses a local question bank, one informed-counterparty decision per round, and a selectable practice spread cap.
 - Market of Cards: complete timing rules, trading limits, deck accounting, inventory settlement, and tie conventions need confirmation.
 - ETF Trading Challenge: price process, trade size, news generation, transaction costs, and reset mechanics need confirmation.
