@@ -180,7 +180,8 @@ export function generateMathQuestion(
   let attempts = 0;
   while (values.length < 4 && attempts < 100) {
     attempts += 1;
-    const candidate = rational(distractorFor(answer, mode, rng).n, distractorFor(answer, mode, rng).d);
+    const distractor = distractorFor(answer, mode, rng);
+    const candidate = rational(distractor.n, distractor.d);
     const key = String(candidate.n) + '/' + String(candidate.d);
     if (!keys.has(key)) {
       keys.add(key);
