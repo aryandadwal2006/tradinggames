@@ -165,7 +165,7 @@ export const GAMES: GameDefinition[] = [
     difficulty: 'Hard',
     duration: '10 min',
     players: 'Solo vs opponents',
-    description: 'Trade an ETF against its underlying basket, catch executable arbitrage, and react to news before other traders.',,
+    description: 'Trade an ETF against its underlying basket, catch executable arbitrage, and react to news before other traders.',
     skills: ['Mental math', 'Arbitrage', 'Execution speed'],
     rules: [
       'Each ETF contains two to four stocks and the prices update during the session.',
