@@ -1,6 +1,7 @@
 import type { FermiSessionSummary } from './fermiChallenge';
 import type { FruitSessionSummary } from './fruitMarket';
 import type { MathSessionSummary } from './mathChallenge';
+import type { MarketMakingSessionSummary } from './makeMeAMarket';
 
 const STORAGE_KEY = 'trading-games.stats.v1';
 const MAX_RECENT_SESSIONS = 20;
@@ -21,6 +22,9 @@ export interface LocalStats {
   fruitBestScore: number | null;
   fruitBestAccuracy: number | null;
   fruitRecentSessions: FruitSessionSummary[];
+  marketMakingSessions: number;
+  marketMakingBestPnl: number | null;
+  marketMakingRecentSessions: MarketMakingSessionSummary[];
 }
 
 const EMPTY_STATS: LocalStats = {
@@ -38,7 +42,10 @@ const EMPTY_STATS: LocalStats = {
   fruitSessions: 0,
   fruitBestScore: null,
   fruitBestAccuracy: null,
-  fruitRecentSessions: []
+  fruitRecentSessions: [],
+  marketMakingSessions: 0,
+  marketMakingBestPnl: null,
+  marketMakingRecentSessions: []
 };
 
 function validSummary(value: unknown): value is MathSessionSummary {
@@ -79,6 +86,20 @@ function validFruitSummary(value: unknown): value is FruitSessionSummary {
     && typeof candidate.playedAt === 'string';
 }
 
+function validMarketMakingSummary(value: unknown): value is MarketMakingSessionSummary {
+  if (typeof value !== 'object' || value === null) return false;
+  const candidate = value as Partial<MarketMakingSessionSummary>;
+  const nullableNumber = (item: unknown) => item === null || (typeof item === 'number' && Number.isFinite(item));
+  return typeof candidate.rounds === 'number'
+    && (candidate.intervalCoverage === null || typeof candidate.intervalCoverage === 'number')
+    && typeof candidate.trades === 'number'
+    && typeof candidate.passes === 'number'
+    && typeof candidate.rawProfit === 'number'
+    && nullableNumber(candidate.averageSpreadFraction)
+    && typeof candidate.durationSeconds === 'number'
+    && typeof candidate.playedAt === 'string';
+}
+
 function count(value: unknown): number {
   return typeof value === 'number' && Number.isFinite(value) ? Math.max(0, Math.floor(value)) : 0;
 }
@@ -103,6 +124,9 @@ function parseStats(raw: string | null): LocalStats {
     const fruitRecentSessions = Array.isArray(candidate.fruitRecentSessions)
       ? candidate.fruitRecentSessions.filter(validFruitSummary).slice(0, MAX_RECENT_SESSIONS)
       : [];
+    const marketMakingRecentSessions = Array.isArray(candidate.marketMakingRecentSessions)
+      ? candidate.marketMakingRecentSessions.filter(validMarketMakingSummary).slice(0, MAX_RECENT_SESSIONS)
+      : [];
     return {
       version: 1,
       sessions: count(candidate.sessions),
@@ -120,7 +144,12 @@ function parseStats(raw: string | null): LocalStats {
       fruitSessions: count(candidate.fruitSessions),
       fruitBestScore: typeof candidate.fruitBestScore === 'number' && Number.isFinite(candidate.fruitBestScore) ? candidate.fruitBestScore : null,
       fruitBestAccuracy: typeof candidate.fruitBestAccuracy === 'number' && Number.isFinite(candidate.fruitBestAccuracy) ? candidate.fruitBestAccuracy : null,
-      fruitRecentSessions
+      fruitRecentSessions,
+      marketMakingSessions: count(candidate.marketMakingSessions),
+      marketMakingBestPnl: typeof candidate.marketMakingBestPnl === 'number' && Number.isFinite(candidate.marketMakingBestPnl)
+        ? candidate.marketMakingBestPnl
+        : null,
+      marketMakingRecentSessions
     };
   } catch {
     return { ...EMPTY_STATS };
@@ -191,6 +220,22 @@ export function saveFruitSession(summary: FruitSessionSummary): LocalStats {
       ? previous.fruitBestAccuracy
       : previous.fruitBestAccuracy === null ? accuracy : Math.max(previous.fruitBestAccuracy, accuracy),
     fruitRecentSessions: [summary, ...previous.fruitRecentSessions].slice(0, MAX_RECENT_SESSIONS),
+    lastPlayedAt: summary.playedAt
+  };
+  persistStats(next);
+  return next;
+}
+
+export function saveMarketMakingSession(summary: MarketMakingSessionSummary): LocalStats {
+  const previous = loadStats();
+  const next: LocalStats = {
+    ...previous,
+    sessions: previous.sessions + 1,
+    marketMakingSessions: previous.marketMakingSessions + 1,
+    marketMakingBestPnl: previous.marketMakingBestPnl === null
+      ? summary.rawProfit
+      : Math.max(previous.marketMakingBestPnl, summary.rawProfit),
+    marketMakingRecentSessions: [summary, ...previous.marketMakingRecentSessions].slice(0, MAX_RECENT_SESSIONS),
     lastPlayedAt: summary.playedAt
   };
   persistStats(next);
