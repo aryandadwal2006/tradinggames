@@ -1,12 +1,14 @@
 import { useMemo, useState } from 'react';
 import FermiChallenge from './components/FermiChallenge';
+import FruitMarket from './components/FruitMarket';
 import MathChallenge from './components/MathChallenge';
 import { GAMES, type GameDefinition } from './data/games';
-import { saveFermiSession, saveMathSession, loadStats, type LocalStats } from './lib/storage';
+import { saveFermiSession, saveFruitSession, saveMathSession, loadStats, type LocalStats } from './lib/storage';
 import type { FermiSessionSummary } from './lib/fermiChallenge';
+import type { FruitSessionSummary } from './lib/fruitMarket';
 import type { MathSessionSummary } from './lib/mathChallenge';
 
-type View = 'overview' | 'math' | 'fermi';
+type View = 'overview' | 'math' | 'fermi' | 'fruit';
 
 function formatInteger(value: number): string {
   return new Intl.NumberFormat('en-US').format(value);
@@ -41,6 +43,7 @@ function App() {
     setFocusedGame(game);
     if (game.slug === 'math-challenge') setView('math');
     else if (game.slug === 'fermi-questions') setView('fermi');
+    else if (game.slug === 'fruit-market') setView('fruit');
     else setView('overview');
   };
 
@@ -50,6 +53,10 @@ function App() {
 
   const handleFermiComplete = (summary: FermiSessionSummary) => {
     setStats(saveFermiSession(summary));
+  };
+
+  const handleFruitComplete = (summary: FruitSessionSummary) => {
+    setStats(saveFruitSession(summary));
   };
 
   const resetFocus = () => {
@@ -69,6 +76,14 @@ function App() {
     return (
       <div className="app-frame">
         <FermiChallenge onExit={resetFocus} onComplete={handleFermiComplete} />
+      </div>
+    );
+  }
+
+  if (view === 'fruit') {
+    return (
+      <div className="app-frame">
+        <FruitMarket onExit={resetFocus} onComplete={handleFruitComplete} />
       </div>
     );
   }
@@ -129,6 +144,7 @@ function App() {
                 <StatCard label="Sessions played" value={formatInteger(stats.sessions)} note="All-time on this device" icon="↗" />
                 <StatCard label="Best net score" value={stats.bestScore === null ? '—' : (stats.bestScore > 0 ? '+' : '') + stats.bestScore} note="Math Challenge" icon="⌁" />
                 <StatCard label="Best Fermi calibration" value={stats.fermiBestMedianFactor === null ? '—' : '× ' + formatInteger(Math.round(stats.fermiBestMedianFactor * 100) / 100)} note={stats.fermiSessions + ' drills · lower is better'} icon="≈" />
+              <StatCard label="Best Fruit score" value={stats.fruitBestScore === null ? '—' : (stats.fruitBestScore > 0 ? '+' : '') + formatInteger(Math.round(stats.fruitBestScore * 100) / 100)} note={stats.fruitSessions + ' markets · adjusted P&L'} icon="↔" />
               </section>
 
               <section className="featured-section">
