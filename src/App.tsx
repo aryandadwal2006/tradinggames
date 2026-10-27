@@ -98,7 +98,7 @@ function App() {
           <div><strong>{stats.bestScore === null ? '—' : (stats.bestScore > 0 ? '+' : '') + stats.bestScore}</strong><span>Best math score</span></div>
         </div>
         <div className="sidebar-bottom">
-          <div className="local-indicator"><span /> SESSION DATA LOCAL</div>
+          <div className="local-indicator"><span /> PROGRESS SAVED LOCALLY</div>
           <p>Built for focused reps, clean feedback, and repeatable progress.</p>
           <span className="sidebar-version">VERSION 0.1.0</span>
         </div>
@@ -132,7 +132,7 @@ function App() {
               </section>
 
               <section className="featured-section">
-                <div className="section-heading"><div><div className="eyebrow">QUICK START</div><h2>Pick up a rep</h2></div><span className="small-secondary">FIRST MODULE AVAILABLE</span></div>
+                <div className="section-heading"><div><div className="eyebrow">QUICK START</div><h2>Pick up a rep</h2></div><span className="small-secondary">QUICK WARM-UP</span></div>
                 <button className="featured-card" type="button" onClick={() => startGame(GAMES.find((game) => game.slug === 'math-challenge') as GameDefinition)}>
                   <div className="featured-content">
                     <div className="featured-topline"><span className="module-badge">MODULE 09</span><span className="ready-badge"><span /> READY TO PLAY</span></div>
