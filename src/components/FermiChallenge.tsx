@@ -239,7 +239,11 @@ export default function FermiChallenge({ onExit, onComplete }: FermiChallengePro
               <span>{currentResult.skipped ? 'No estimate submitted' : describeEstimate(currentResult)}</span>
               <small>Reference answer: {formatFermiNumber(currentQuestion.referenceAnswer)} {currentQuestion.unit}</small>
             </div>
-            <div className="fermi-reveal-footer"><span>Reference values are approximate, not exact ground truth for variable real-world quantities.</span><button className="primary-button" type="button" onClick={goNext}>{roundIndex + 1 >= questions.length ? 'See results' : 'Next question'} <span aria-hidden="true">→</span></button></div>
+            <div className="fermi-reveal-footer">
+              <span>Reference values are approximate, not exact ground truth for variable real-world quantities.</span>
+              {currentQuestion.sourceUrl && <a className="fermi-source-link" href={currentQuestion.sourceUrl} target="_blank" rel="noreferrer">Public question source ↗</a>}
+              <button className="primary-button" type="button" onClick={goNext}>{roundIndex + 1 >= questions.length ? 'See results' : 'Next question'} <span aria-hidden="true">→</span></button>
+            </div>
           </div>
         </div>
       )}

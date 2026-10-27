@@ -18,6 +18,24 @@ describe('Fermi practice question selection', () => {
     expect(new Set(a.map((question) => question.id)).size).toBe(a.length);
   });
 
+  it('includes public TraderMath prompts as unhinted guess-first rounds with source links revealed afterward', () => {
+    const questions = generateFermiSession(new SeededRandom(19), getFermiQuestionCount());
+    const sourceQuestions = questions.filter((question) => question.sourceUrl);
+    expect(sourceQuestions.length).toBe(8);
+    expect(sourceQuestions.every((question) => question.prompt.length > 10 && question.referenceAnswer > 0)).toBe(true);
+    expect(sourceQuestions.every((question) => question.decomposition.length > 10)).toBe(true);
+    expect(sourceQuestions.map((question) => question.id)).toEqual(expect.arrayContaining([
+      'tradermath-backyard-pool',
+      'tradermath-melbourne-piano-tuners',
+      'tradermath-shanghai-bubble-tea',
+      'tradermath-concrete-basketball',
+      'tradermath-empire-state-windows',
+      'tradermath-big-mac-calories',
+      'tradermath-jfk-departures',
+      'tradermath-m-and-ms-jar'
+    ]));
+  });
+
   it('allows explicit round counts within the bank size', () => {
     expect(generateFermiSession(new SeededRandom(42), 1)).toHaveLength(1);
     expect(generateFermiSession(new SeededRandom(42), getFermiQuestionCount())).toHaveLength(getFermiQuestionCount());

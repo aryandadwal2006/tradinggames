@@ -8,6 +8,7 @@ export interface FermiQuestion {
   referenceAnswer: number;
   explanation: string;
   decomposition: string;
+  sourceUrl?: string;
 }
 
 export interface FermiEvaluation {
@@ -197,8 +198,89 @@ const QUESTION_BANK: readonly FermiQuestion[] = [
     referenceAnswer: 31_536_000,
     decomposition: 'Multiply 365 days by 24 hours per day, 60 minutes per hour, and 60 seconds per minute.',
     explanation: '365 × 24 × 60 × 60 = 31,536,000 seconds.'
-  }
-];
+  },
+
+  {
+    id: 'tradermath-backyard-pool',
+    title: 'A Backyard Summer Fixture',
+    prompt: 'Estimate the volume of water in a typical backyard swimming pool.',
+    unit: 'cubic metres',
+    referenceAnswer: 50,
+    decomposition: 'Model a backyard pool as roughly 8 m long, 4 m wide, and 1.5 m deep on average.',
+    explanation: '8 × 4 × 1.5 = 48 m³, so 50 cubic metres is a useful rounded practice reference. Real pools vary widely.',
+    sourceUrl: 'https://www.tradermath.org/fermi-questions/a-backyard-summer-fixture'
+  },
+  {
+    id: 'tradermath-melbourne-piano-tuners',
+    title: "A City's Specialist Trade",
+    prompt: 'Estimate how many piano tuners work in Greater Melbourne.',
+    unit: 'piano tuners',
+    referenceAnswer: 150,
+    decomposition: 'Estimate the number of households, the share with a piano, how often each piano needs tuning, and jobs completed by one tuner per year.',
+    explanation: 'A practice model with about 2 million households, 5% owning a piano, one tuning per piano every two years, and around 330 jobs per tuner annually gives roughly 150 tuners. The result depends strongly on the assumptions.',
+    sourceUrl: 'https://www.tradermath.org/fermi-questions/city-specialist-trade'
+  },
+  {
+    id: 'tradermath-shanghai-bubble-tea',
+    title: "A City's Tea Scene",
+    prompt: 'Estimate the number of bubble-tea shops in Shanghai.',
+    unit: 'shops',
+    referenceAnswer: 8000,
+    decomposition: 'Start with a population in the tens of millions and estimate how many residents one shop might serve.',
+    explanation: 'At around 24 million residents and one shop per roughly 3,000 residents, the estimate is about 8,000 shops. Treat this as a locally chosen calibration anchor, not a verified city count.',
+    sourceUrl: 'https://www.tradermath.org/fermi-questions/city-tea-scene'
+  },
+  {
+    id: 'tradermath-concrete-basketball',
+    title: 'A Concrete Basketball',
+    prompt: 'Estimate the mass of a basketball if the entire ball were solid concrete.',
+    unit: 'kilograms',
+    referenceAnswer: 18,
+    decomposition: 'Approximate the ball as a sphere about 24 cm in diameter, calculate its volume, then multiply by concrete density.',
+    explanation: 'A sphere of radius 0.12 m has volume around 0.0072 m³. At roughly 2,400 kg/m³, its mass would be about 17 kg, rounded here to 18 kg.',
+    sourceUrl: 'https://www.tradermath.org/fermi-questions/a-concrete-basketball'
+  },
+  {
+    id: 'tradermath-empire-state-windows',
+    title: 'A Famous Facade',
+    prompt: 'Estimate how many windows the Empire State Building has.',
+    unit: 'windows',
+    referenceAnswer: 6500,
+    decomposition: 'Approximate the count of windowed floors and the average number of windows per floor.',
+    explanation: 'A rough estimate of around 100 windowed floors with about 65 windows per floor yields 6,500. Building sections differ, so this is an order-of-magnitude reference.',
+    sourceUrl: 'https://www.tradermath.org/fermi-questions/a-famous-facade'
+  },
+  {
+    id: 'tradermath-big-mac-calories',
+    title: 'A Fast-Food Classic',
+    prompt: 'Estimate the energy in one Big Mac, measured in kilocalories.',
+    unit: 'kilocalories',
+    referenceAnswer: 550,
+    decomposition: 'Estimate the energy contribution of the bun, beef patties, cheese, sauce, and vegetables, then add them.',
+    explanation: 'A rounded reference near 550 kcal is suitable for practice. Nutrition values vary by country and recipe, so this is not a universal product specification.',
+    sourceUrl: 'https://www.tradermath.org/fermi-questions/a-fast-food-classic'
+  },
+  {
+    id: 'tradermath-jfk-departures',
+    title: "A Gateway's Daily Rhythm",
+    prompt: 'Estimate how many flights depart JFK airport on a typical day.',
+    unit: 'departures per day',
+    referenceAnswer: 700,
+    decomposition: 'Estimate average departures per hour across the day and multiply by 24, allowing for busier and quieter periods.',
+    explanation: 'An average near 30 departures per hour gives 720 daily departures, making 700 a reasonable rounded practice anchor. Daily schedules vary.',
+    sourceUrl: 'https://www.tradermath.org/fermi-questions/gateway-daily-rhythm'
+  },
+  {
+    id: 'tradermath-m-and-ms-jar',
+    title: 'A Kitchen-Counter Puzzle',
+    prompt: 'Estimate how many M&M candies fit in a cylindrical jar 10 cm wide and 17 cm tall.',
+    unit: 'candies',
+    referenceAnswer: 1500,
+    decomposition: 'Calculate the jar volume, multiply by a packing fraction to account for gaps, then divide by the volume of one candy.',
+    explanation: 'The jar volume is π × 5² × 17 ≈ 1,335 cm³. Assuming candies occupy about 65% of that volume and each candy takes roughly 0.58 cm³ gives around 1,500 candies.',
+    sourceUrl: 'https://www.tradermath.org/fermi-questions/a-kitchen-counter-puzzle'
+  },
+ ];
 
 export const FERMI_ROUND_SECONDS = 25;
 export const FERMI_ROUNDS_PER_SESSION = 12;
