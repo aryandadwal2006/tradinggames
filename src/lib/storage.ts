@@ -4,6 +4,7 @@ import type { MathSessionSummary } from './mathChallenge';
 import type { MarketMakingSessionSummary } from './makeMeAMarket';
 import type { CardSessionSummary } from './nextCardBetting';
 import type { ProbabilitySessionSummary } from './probabilityBetting';
+import type { ETFSessionSummary } from './etfTrading';
 
 const STORAGE_KEY = 'trading-games.stats.v1';
 const MAX_RECENT_SESSIONS = 20;
@@ -33,6 +34,9 @@ export interface LocalStats {
   probabilitySessions: number;
   probabilityBestBankroll: number | null;
   probabilityRecentSessions: ProbabilitySessionSummary[];
+  etfSessions: number;
+  etfBestPnl: number | null;
+  etfRecentSessions: ETFSessionSummary[];
 }
 
 const EMPTY_STATS: LocalStats = {
@@ -59,7 +63,10 @@ const EMPTY_STATS: LocalStats = {
   nextCardRecentSessions: [],
   probabilitySessions: 0,
   probabilityBestBankroll: null,
-  probabilityRecentSessions: []
+  probabilityRecentSessions: [],
+  etfSessions: 0,
+  etfBestPnl: null,
+  etfRecentSessions: []
 };
 
 function validSummary(value: unknown): value is MathSessionSummary {
@@ -158,6 +165,25 @@ function validProbabilitySummary(value: unknown): value is ProbabilitySessionSum
     && typeof candidate.playedAt === 'string';
 }
 
+function validETFSessionSummary(value: unknown): value is ETFSessionSummary {
+  if (typeof value !== 'object' || value === null) return false;
+  const candidate = value as Partial<ETFSessionSummary>;
+  const nullableNumber = (item: unknown) => item === null || (typeof item === 'number' && Number.isFinite(item));
+  return typeof candidate.trades === 'number'
+    && typeof candidate.profitableTrades === 'number'
+    && nullableNumber(candidate.accuracy)
+    && typeof candidate.totalPnl === 'number'
+    && typeof candidate.newsPnl === 'number'
+    && typeof candidate.normalPnl === 'number'
+    && nullableNumber(candidate.bestEdge)
+    && nullableNumber(candidate.averageEdge)
+    && typeof candidate.bestBotRanked === 'boolean'
+    && Array.isArray(candidate.botPnl)
+    && typeof candidate.durationSeconds === 'number'
+    && typeof candidate.constituentCount === 'number'
+    && typeof candidate.playedAt === 'string';
+}
+
 function count(value: unknown): number {
   return typeof value === 'number' && Number.isFinite(value) ? Math.max(0, Math.floor(value)) : 0;
 }
@@ -191,6 +217,9 @@ function parseStats(raw: string | null): LocalStats {
     const probabilityRecentSessions = Array.isArray(candidate.probabilityRecentSessions)
       ? candidate.probabilityRecentSessions.filter(validProbabilitySummary).slice(0, MAX_RECENT_SESSIONS)
       : [];
+    const etfRecentSessions = Array.isArray(candidate.etfRecentSessions)
+      ? candidate.etfRecentSessions.filter(validETFSessionSummary).slice(0, MAX_RECENT_SESSIONS)
+      : [];
     return {
       version: 1,
       sessions: count(candidate.sessions),
@@ -223,7 +252,10 @@ function parseStats(raw: string | null): LocalStats {
       probabilityBestBankroll: typeof candidate.probabilityBestBankroll === 'number' && Number.isFinite(candidate.probabilityBestBankroll)
         ? candidate.probabilityBestBankroll
         : null,
-      probabilityRecentSessions
+      probabilityRecentSessions,
+      etfSessions: count(candidate.etfSessions),
+      etfBestPnl: typeof candidate.etfBestPnl === 'number' && Number.isFinite(candidate.etfBestPnl) ? candidate.etfBestPnl : null,
+      etfRecentSessions
     };
   } catch {
     return { ...EMPTY_STATS };
@@ -342,6 +374,20 @@ export function saveProbabilitySession(summary: ProbabilitySessionSummary): Loca
       ? summary.finalBankroll
       : Math.max(previous.probabilityBestBankroll, summary.finalBankroll),
     probabilityRecentSessions: [summary, ...previous.probabilityRecentSessions].slice(0, MAX_RECENT_SESSIONS),
+    lastPlayedAt: summary.playedAt
+  };
+  persistStats(next);
+  return next;
+}
+
+export function saveETFSession(summary: ETFSessionSummary): LocalStats {
+  const previous = loadStats();
+  const next: LocalStats = {
+    ...previous,
+    sessions: previous.sessions + 1,
+    etfSessions: previous.etfSessions + 1,
+    etfBestPnl: previous.etfBestPnl === null ? summary.totalPnl : Math.max(previous.etfBestPnl, summary.totalPnl),
+    etfRecentSessions: [summary, ...previous.etfRecentSessions].slice(0, MAX_RECENT_SESSIONS),
     lastPlayedAt: summary.playedAt
   };
   persistStats(next);
