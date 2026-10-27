@@ -8,7 +8,7 @@ Install dependencies, run the development server with npm run dev, and validate 
 
 ## Current scope
 
-The catalog covers all nine formats in the supplied materials. Fruit Market, Fermi Questions, Make Me a Market, Next Card Betting (higher/lower mode), Probability Betting, and Math Challenge are playable. Other modules remain marked in development until their state transitions and settlement can be specified and tested. Fruit Market exposes its custom quote-generation assumptions; Fermi reports transparent factor-error calibration rather than an invented replica of the original game's unpublished point curve; Make Me a Market displays its local spread-cap and counterparty assumptions; Next Card shows exact unseen-deck probabilities and a half-Kelly guide.
+The catalog covers all nine formats in the supplied materials. Fruit Market, Fermi Questions, Make Me a Market, Next Card Betting (higher/lower mode), Probability Betting, ETF Trading Challenge, and Math Challenge are playable. Other modules remain marked in development until their state transitions and settlement can be specified and tested. Fruit Market exposes its custom quote-generation assumptions; Fermi reports transparent factor-error calibration rather than an invented replica of the original game's unpublished point curve; Make Me a Market displays its local spread-cap and counterparty assumptions; Next Card shows exact unseen-deck probabilities and a half-Kelly guide.
 
 ## Deployment
 
