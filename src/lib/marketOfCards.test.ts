@@ -42,7 +42,7 @@ describe('Market of Cards rules', () => {
 
   it('estimates the full in-play table value without looking at hidden cards', () => {
     const deck = createStandardDeck();
-    const hand = [deck.find((card) => card.id === '8-hearts')!, deck.find((card) => card.id === 'Q-spades')!];
+    const hand = [deck.find((card) => card.id === '8-hearts')!, deck.find((card) => card.id === '12-spades')!];
     const revealed = [deck.find((card) => card.id === '9-diamonds')!];
     const estimate = estimateGameValue(hand, revealed, 4, 'high');
     const known = [...hand, ...revealed];
