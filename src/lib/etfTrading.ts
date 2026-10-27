@@ -240,7 +240,7 @@ export function advanceETFMarket(state: ETFMarketState, rng: SeededRandom): ETFM
       const direction = rng.next() < 0.5 ? -1 : 1;
       stocks[changedIndex] = changeStock(stock, magnitude * direction);
       lastUpdateKind = 'news';
-      newsHeadline = rng.pick(NEWS_HEADLINES);
+      newsHeadline = NEWS_HEADLINES[rng.int(0, NEWS_HEADLINES.length - 1)] ?? NEWS_HEADLINES[0];
       newsSymbol = stock.symbol;
     }
   }
