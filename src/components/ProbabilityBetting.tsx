@@ -47,12 +47,6 @@ function eventOutcomeLabel(result: ProbabilityRoundResult['events'][number]): st
   return 'No bet';
 }
 
-function expectedEdgeText(offer: ProbabilityOffer, side: Exclude<ProbabilitySide, 'skip'>): string {
-  const probability = side === 'yes' ? offer.probability : 1 - offer.probability;
-  const odds = side === 'yes' ? offer.yesOdds : offer.noOdds;
-  const edge = expectedValuePerUnit(probability, odds);
-  return (edge > 0 ? '+' : '') + (edge * 100).toFixed(1) + '% expected return per unit';
-}
 
 export default function ProbabilityBetting({ onExit, onComplete }: ProbabilityBettingProps) {
   const [phase, setPhase] = useState<'ready' | 'betting' | 'revealed' | 'finished'>('ready');
@@ -316,6 +310,7 @@ export default function ProbabilityBetting({ onExit, onComplete }: ProbabilityBe
                     <div><span>Selected fair odds</span><strong>{result.fairOdds === null ? '—' : formatDecimalOdds(result.fairOdds)}</strong></div>
                     <div><span>Quoted odds</span><strong>{result.selectedOdds === null ? '—' : formatDecimalOdds(result.selectedOdds)}</strong></div>
                     <div><span>Expected value / unit</span><strong className={(result.expectedValuePerUnit ?? 0) > 0 ? 'value-positive' : (result.expectedValuePerUnit ?? 0) < 0 ? 'value-negative' : ''}>{result.expectedValuePerUnit === null ? '—' : signed(result.expectedValuePerUnit)}</strong></div>
+                    <div><span>Half-Kelly stake guide</span><strong>{result.side === 'skip' ? '—' : result.halfKellyStake.toLocaleString('en-US')}</strong></div>
                     <div><span>Realized P&amp;L</span><strong className={result.pnl < 0 ? 'value-negative' : 'value-positive'}>{signed(result.pnl)}</strong></div>
                   </div>
                   <div className="probability-result-foot"><span>{eventOutcomeLabel(result)}</span><span>{result.side === 'skip' ? (result.positiveEvOpportunity ? 'Positive-EV opportunity missed' : 'No positive-EV price') : result.positiveEv ? 'Positive expected value' : 'Negative expected value'}</span>{result.sizingEfficiency !== null && <span>Half-Kelly sizing efficiency {Math.round(result.sizingEfficiency * 100)}%</span>}</div>
