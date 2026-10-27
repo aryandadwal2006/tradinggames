@@ -16,4 +16,4 @@ This is a static Vite application. For Cloudflare Pages, use npm run build as th
 
 ## Verification
 
-The GitHub Actions workflow checks TypeScript, runs deterministic unit tests for each practice engine, and produces a production Vite build on pushes and pull requests. The Next Card tests cover deck reproducibility, configurable aces and suits, exact odds, Kelly sizing, win/loss/push settlement, and bankroll constraints. Probability Betting tests also sample every event type in deterministic batches and check the observed rate against its enumerated probability.
+The GitHub Actions workflow checks TypeScript, runs deterministic unit tests for each practice engine, and produces a production Vite build on pushes and pull requests. The Next Card tests cover deck reproducibility, configurable aces and suits, exact odds, Kelly sizing, win/loss/push settlement, and bankroll constraints. ETF tests cover executable basket pricing, normal price updates, post-trade resets, and differentiated bot policies. Probability Betting tests also sample every event type in deterministic batches and check the observed rate against its enumerated probability.
