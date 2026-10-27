@@ -20,6 +20,12 @@ The Society Partner Deck and Society Host Guide name these nine formats: Fruit M
 
 ## Implemented modules
 
+### Make Me a Market
+
+The practice module uses an original local question bank, shuffled into five-question sessions. Each question has a confidence-interval phase followed by a two-sided quote. A simulated informed counterparty buys at the ask only when the ask is below the reference answer, sells at the bid only when the bid is above the answer, and otherwise passes. Trade P&L is marked to the reference answer.
+
+The user-configurable spread constraint is a practice setting. The public page confirms that the original game uses a configured spread constraint but does not state its default value. The local module displays its selected setting and reports interval coverage, trade incidence, spread width, and P&L. It does not claim to reproduce the original final-question or leaderboard point system.
+
 ### Fruit Market Game
 
 The local module implements the published core loop: two baskets are randomized with 3–8 apples and oranges of each type, fair value is total apples multiplied by total oranges, baskets update after randomized 15–20 second intervals, and over-limit baskets reset. It supports repeated one-unit buys at the ask and sells at the bid. The score is raw trade P&L multiplied by first-click accuracy.
@@ -43,7 +49,7 @@ The public rules specify logarithmic closeness, mention that an estimate within 
 - Probability Betting: event distributions, quote generation, stake constraints, and full scoring details are not published.
 - The Marble Olympics: team-strength model, event timestamps, side-bet generation, payout formulas by bet type, and the full match clock model are not published.
 - Next Card Betting: precise score formula, shoe/deck reset policy, exact bet options, and tie/ace configuration semantics are not fully specified.
-- Make Me a Market: question bank, counterparty policy, trade sizes, market update sequence, and exact settlement conventions need confirmation.
+- Make Me a Market: the official question bank, exact default spread cap, repeated-quote/trade sequence, and final leaderboard point rules are not fully published. The current implementation explicitly uses a local question bank, one informed-counterparty decision per round, and a selectable practice spread cap.
 - Market of Cards: complete timing rules, trading limits, deck accounting, inventory settlement, and tie conventions need confirmation.
 - ETF Trading Challenge: price process, trade size, news generation, transaction costs, and reset mechanics need confirmation.
 
