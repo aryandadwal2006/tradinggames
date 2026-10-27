@@ -20,6 +20,12 @@ The Society Partner Deck and Society Host Guide name these nine formats: Fruit M
 
 ## Implemented modules
 
+### ETF Trading Challenge
+
+The local practice module models an ETF composed of two to four constituent stocks. It exposes executable stock bids and asks alongside an ETF bid and ask. Buying the ETF and selling the basket has an immediate edge of `sum(stock bids) − ETF ask`; selling the ETF and buying the basket has an edge of `ETF bid − sum(stock asks)`. A trade records that spread P&L, with normal and news-driven sessions tracked separately.
+
+The public rules describe constituent arbitrage, news and normal P&L, and post-trade price resets, but do not publish the complete price evolution or news process. The local practice settings therefore explicitly define random stock changes, a news shock probability and size, ETF momentum, the quote widths, and a 70% basket-midpoint adjustment after execution. Four named trader agents have different reaction-delay distributions, edge thresholds, attention levels, and valuation noise. They can miss an opportunity, race the player, or occasionally act on a noisy false edge; the chosen settings are simulation parameters rather than an exact reconstruction of the platform.
+
 ### Probability Betting
 
 Each round presents four distinct event offers drawn from an explicit bank of fair coin, dice, and standard-deck events. The offer contains YES and NO decimal odds randomized around the fair odds. Users may bet on either side or skip, with all stakes for a round constrained by the available bankroll. Winning returns the stake plus the quoted net payout; losing costs the stake. The module evaluates edge as `p × decimalOdds − 1`, computes a full-Kelly fraction for positive-edge bets, and records local decision-quality, participation, sizing, and realized-bankroll metrics.
