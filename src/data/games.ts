@@ -27,7 +27,7 @@ export interface GameDefinition {
 export const GAMES: GameDefinition[] = [
   {
     slug: 'fruit-market',
-    title: 'Fruit Market',
+    title: 'Fruit Market Game',
     category: 'Market making',
     difficulty: 'Easy',
     duration: '5 min',
@@ -46,7 +46,7 @@ export const GAMES: GameDefinition[] = [
   },
   {
     slug: 'fermi-questions',
-    title: 'Fermi Questions',
+    title: 'Fermi Questions Challenge',
     category: 'Estimation',
     difficulty: 'Easy',
     duration: '5 min',
