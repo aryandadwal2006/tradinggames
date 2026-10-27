@@ -227,7 +227,7 @@ export default function MathChallenge({ onExit, onComplete }: MathChallengeProps
             <div><span>Correct</span><strong>{correctCount}</strong></div>
             <div><span>Incorrect</span><strong>{incorrectCount}</strong></div>
             <div><span>Accuracy</span><strong>{accuracy}%</strong></div>
-            <div><span>Questions / min</span><strong>{Math.round(totalAnswered / (durationSeconds / 60) * 10) / 10}</strong></div>
+            <div><span>Questions / min</span><strong>{Math.round(totalAnswered / Math.max(1 / 60, (durationSeconds * 1000 - remainingMs) / 60000) * 10) / 10}</strong></div>
           </div>
           <div className="review-section">
             <div className="section-heading"><h2>Answer review</h2><span>{history.length} answered</span></div>
