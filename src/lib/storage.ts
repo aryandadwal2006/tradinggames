@@ -5,6 +5,8 @@ import type { MarketMakingSessionSummary } from './makeMeAMarket';
 import type { CardSessionSummary } from './nextCardBetting';
 import type { ProbabilitySessionSummary } from './probabilityBetting';
 import type { ETFSessionSummary } from './etfTrading';
+import type { MarketCardsSessionSummary } from './marketOfCards';
+import type { MarbleSessionSummary } from './marbleOlympics';
 
 const STORAGE_KEY = 'trading-games.stats.v1';
 const MAX_RECENT_SESSIONS = 20;
@@ -37,6 +39,12 @@ export interface LocalStats {
   etfSessions: number;
   etfBestPnl: number | null;
   etfRecentSessions: ETFSessionSummary[];
+  marketCardsSessions: number;
+  marketCardsBestPnl: number | null;
+  marketCardsRecentSessions: MarketCardsSessionSummary[];
+  marbleSessions: number;
+  marbleBestPnl: number | null;
+  marbleRecentSessions: MarbleSessionSummary[];
 }
 
 const EMPTY_STATS: LocalStats = {
@@ -66,7 +74,13 @@ const EMPTY_STATS: LocalStats = {
   probabilityRecentSessions: [],
   etfSessions: 0,
   etfBestPnl: null,
-  etfRecentSessions: []
+  etfRecentSessions: [],
+  marketCardsSessions: 0,
+  marketCardsBestPnl: null,
+  marketCardsRecentSessions: [],
+  marbleSessions: 0,
+  marbleBestPnl: null,
+  marbleRecentSessions: []
 };
 
 function validSummary(value: unknown): value is MathSessionSummary {
@@ -184,6 +198,35 @@ function validETFSessionSummary(value: unknown): value is ETFSessionSummary {
     && typeof candidate.playedAt === 'string';
 }
 
+function validMarketCardsSummary(value: unknown): value is MarketCardsSessionSummary {
+  if (typeof value !== 'object' || value === null) return false;
+  const candidate = value as Partial<MarketCardsSessionSummary>;
+  return typeof candidate.players === 'number'
+    && (candidate.aceMode === 'high' || candidate.aceMode === 'low')
+    && typeof candidate.rounds === 'number'
+    && typeof candidate.trades === 'number'
+    && typeof candidate.finalValue === 'number'
+    && typeof candidate.finalPnl === 'number'
+    && typeof candidate.finalPosition === 'number'
+    && typeof candidate.durationSeconds === 'number'
+    && typeof candidate.playedAt === 'string';
+}
+
+function validMarbleSummary(value: unknown): value is MarbleSessionSummary {
+  if (typeof value !== 'object' || value === null) return false;
+  const candidate = value as Partial<MarbleSessionSummary>;
+  return typeof candidate.durationMinutes === 'number'
+    && typeof candidate.mainTrades === 'number'
+    && typeof candidate.sideBetTrades === 'number'
+    && typeof candidate.pnl === 'number'
+    && typeof candidate.mainPnl === 'number'
+    && typeof candidate.sideBetPnl === 'number'
+    && typeof candidate.finalTeamATotal === 'number'
+    && typeof candidate.finalTeamBTotal === 'number'
+    && typeof candidate.durationSeconds === 'number'
+    && typeof candidate.playedAt === 'string';
+}
+
 function count(value: unknown): number {
   return typeof value === 'number' && Number.isFinite(value) ? Math.max(0, Math.floor(value)) : 0;
 }
@@ -220,6 +263,12 @@ function parseStats(raw: string | null): LocalStats {
     const etfRecentSessions = Array.isArray(candidate.etfRecentSessions)
       ? candidate.etfRecentSessions.filter(validETFSessionSummary).slice(0, MAX_RECENT_SESSIONS)
       : [];
+    const marketCardsRecentSessions = Array.isArray(candidate.marketCardsRecentSessions)
+      ? candidate.marketCardsRecentSessions.filter(validMarketCardsSummary).slice(0, MAX_RECENT_SESSIONS)
+      : [];
+    const marbleRecentSessions = Array.isArray(candidate.marbleRecentSessions)
+      ? candidate.marbleRecentSessions.filter(validMarbleSummary).slice(0, MAX_RECENT_SESSIONS)
+      : [];
     return {
       version: 1,
       sessions: count(candidate.sessions),
@@ -255,7 +304,13 @@ function parseStats(raw: string | null): LocalStats {
       probabilityRecentSessions,
       etfSessions: count(candidate.etfSessions),
       etfBestPnl: typeof candidate.etfBestPnl === 'number' && Number.isFinite(candidate.etfBestPnl) ? candidate.etfBestPnl : null,
-      etfRecentSessions
+      etfRecentSessions,
+      marketCardsSessions: count(candidate.marketCardsSessions),
+      marketCardsBestPnl: typeof candidate.marketCardsBestPnl === 'number' && Number.isFinite(candidate.marketCardsBestPnl) ? candidate.marketCardsBestPnl : null,
+      marketCardsRecentSessions,
+      marbleSessions: count(candidate.marbleSessions),
+      marbleBestPnl: typeof candidate.marbleBestPnl === 'number' && Number.isFinite(candidate.marbleBestPnl) ? candidate.marbleBestPnl : null,
+      marbleRecentSessions
     };
   } catch {
     return { ...EMPTY_STATS };
@@ -388,6 +443,34 @@ export function saveETFSession(summary: ETFSessionSummary): LocalStats {
     etfSessions: previous.etfSessions + 1,
     etfBestPnl: previous.etfBestPnl === null ? summary.totalPnl : Math.max(previous.etfBestPnl, summary.totalPnl),
     etfRecentSessions: [summary, ...previous.etfRecentSessions].slice(0, MAX_RECENT_SESSIONS),
+    lastPlayedAt: summary.playedAt
+  };
+  persistStats(next);
+  return next;
+}
+
+export function saveMarketCardsSession(summary: MarketCardsSessionSummary): LocalStats {
+  const previous = loadStats();
+  const next: LocalStats = {
+    ...previous,
+    sessions: previous.sessions + 1,
+    marketCardsSessions: previous.marketCardsSessions + 1,
+    marketCardsBestPnl: previous.marketCardsBestPnl === null ? summary.finalPnl : Math.max(previous.marketCardsBestPnl, summary.finalPnl),
+    marketCardsRecentSessions: [summary, ...previous.marketCardsRecentSessions].slice(0, MAX_RECENT_SESSIONS),
+    lastPlayedAt: summary.playedAt
+  };
+  persistStats(next);
+  return next;
+}
+
+export function saveMarbleSession(summary: MarbleSessionSummary): LocalStats {
+  const previous = loadStats();
+  const next: LocalStats = {
+    ...previous,
+    sessions: previous.sessions + 1,
+    marbleSessions: previous.marbleSessions + 1,
+    marbleBestPnl: previous.marbleBestPnl === null ? summary.pnl : Math.max(previous.marbleBestPnl, summary.pnl),
+    marbleRecentSessions: [summary, ...previous.marbleRecentSessions].slice(0, MAX_RECENT_SESSIONS),
     lastPlayedAt: summary.playedAt
   };
   persistStats(next);
