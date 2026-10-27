@@ -32,7 +32,7 @@ export const GAMES: GameDefinition[] = [
     difficulty: 'Easy',
     duration: '5 min',
     players: 'Solo',
-    description: 'Infer fair value from changing baskets, then trade when the market is away from value.',
+    description: 'Calculate basket fair value under changing conditions and trade when the bid or ask gives you an edge.',
     skills: ['Fair value', 'Fast arithmetic', 'Trade selection'],
     rules: [
       'Two bags contain apples and oranges. The described fair value is total apples multiplied by total oranges.',
@@ -40,7 +40,7 @@ export const GAMES: GameDefinition[] = [
       'The published rules describe optional inflation, deflation, and nullification events.',
       'The exact quote-generation process and event schedule are not fully specified in the public rules.'
     ],
-    playable: false,
+    playable: true,
     accent: 'orange',
     externalRules: 'https://marketmakinggames.com/games/fruit-market-game'
   },
