@@ -20,6 +20,12 @@ The Society Partner Deck and Society Host Guide name these nine formats: Fruit M
 
 ## Implemented modules
 
+### Probability Betting
+
+Each round presents four distinct event offers drawn from an explicit bank of fair coin, dice, and standard-deck events. The offer contains YES and NO decimal odds randomized around the fair odds. Users may bet on either side or skip, with all stakes for a round constrained by the available bankroll. Winning returns the stake plus the quoted net payout; losing costs the stake. The module evaluates edge as `p × decimalOdds − 1`, computes a full-Kelly fraction for positive-edge bets, and records local decision-quality, participation, sizing, and realized-bankroll metrics.
+
+The public source does not state its precise offer-generation distribution or complete platform scoring curve. The local quote factor range (0.82–1.18), six-round session, 30-second round clock, starting bankroll, and metrics are practice settings, and are disclosed in the setup UI. These scores are not represented as platform-equivalent points.
+
 ### Next Card Betting
 
 The higher/lower mode uses a shuffled standard-rank deck with one to four suits, an adjustable ace value, and draws without replacement. At each decision the player sees the current reference card and can compute exact probabilities from all cards still unseen. Stakes cannot exceed the current bankroll. A correct prediction wins the stake, an incorrect prediction loses it, and a tie returns it. The module provides a half-Kelly stake guide and records expected-value decision quality and sizing efficiency.
